@@ -3,16 +3,27 @@ import { NgModule } from '@angular/core';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { AppComponent } from './app.component';
-import { UiModule } from './ui/ui.module';
+import { AppRoutingModule } from './app-routing.module';
+import { ImprintComponent } from './subsites/imprint/imprint.component';
+
+import { HeaderComponent } from './ui/header/header.component';
+import { FooterComponent } from './ui/footer/footer.component';
+import { AboutComponent } from './subsites/about/about.component';
+import { LandingComponent } from './ui/landing/landing.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    ImprintComponent,
+    HeaderComponent,
+    FooterComponent,
+    AboutComponent,
+    LandingComponent
   ],
   imports: [
     BrowserModule,
     NgbModule.forRoot(),
-    UiModule
+    AppRoutingModule
   ],
   providers: [],
   bootstrap: [AppComponent]
