@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { ModalService } from '../../util/modal.service';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-landing',
@@ -7,9 +9,43 @@ import { Component, OnInit } from '@angular/core';
 })
 export class LandingComponent implements OnInit {
 
-  constructor() { }
+  confirmResult: boolean;
+  inputResult: string;
+  messageResult: boolean;
+
+  constructor(private modalService: ModalService) { }
 
   ngOnInit() {
+    console.log('FROM component | Initizalized it...');
+  }
+
+
+  /**
+   * We are using the .take() operator here in order to directly unsubscribe after the first value is
+   * recived and close the stream.
+   */
+  openConfirm() {
+    this.modalService.confirm('Alles klar?', 'Frage')
+      .pipe(take(1))
+      .subscribe(result => {
+        this.confirmResult = result;
+      });
+  }
+
+  openInput() {
+    this.modalService.input('Wie findest du dieses Tool (1-Super -- 5-Geht so)?', '1', 'Frage')
+      .pipe(take(1))
+      .subscribe(result => {
+        this.inputResult = result;
+      });
+  }
+
+  openMessage() {
+    this.modalService.message('Willkommen bei der Highlighter Web App!!', 'Information')
+      .pipe(take(1))
+      .subscribe(result => {
+        this.messageResult = result;
+      });
   }
 
 }

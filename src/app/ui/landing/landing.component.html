@@ -1,3 +1,25 @@
 <div class="container">
-  <h1>Highlighter Test</h1>
+  <h1>Highlighter</h1>
+  <small>Hightlighter is a visual assistant for lengthy legal texts. Does the fine print matter?
+    <strong>Sure it does!</strong></small>
+  <hr/>
+  <div class="row" style="margin-bottom: 10px;">
+    <div class="col-md-12">
+      Example Dialogs:</div>
+  </div>
+  <div class="row">
+    <div class="col-md-4">
+      <button type="button" class="btn btn-outline-dark" (click)="openConfirm()">Confirm Test</button>
+      <p>Confirmation dialog Ergebnis: {{ confirmResult }}</p>
+    </div>
+    <div class="col-md-4">
+      <button type="button" class="btn btn-outline-dark" (click)="openInput()">Input Test</button>
+      <p>Input dialog Ergebnis: {{ inputResult }}</p>
+    </div>
+    <div class="col-md-4">
+      <button type="button" class="btn btn-outline-dark" (click)="openMessage()">Message Test</button>
+      <p>Message dialog Ergebnis: {{ messageResult }}</p>
+    </div>
+  </div>
+
 </div>
