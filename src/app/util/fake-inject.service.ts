@@ -5,7 +5,12 @@ import { Aurum } from '../shared/aurum.model';
 @Injectable()
 export class FakeInjectService {
 
-  constructor(private dataLoading: DataLoadingService) {
+  constructor(private dataLoading: DataLoadingService) { }
+
+  /**
+   * Method is used in order to load the sample data or start the fake injection on the website.
+   */
+  startInjection() {
     // Read it for convenience as PROMISE
     this.dataLoading.readLocalDataP().then(data => {
       console.log('FROM service | Promise read data');
@@ -18,7 +23,7 @@ export class FakeInjectService {
    * This method is used to generate a fake injection of the browser extension.
    * @param data we previously load form a local file using another service
    */
-  injectFakeData(data: Aurum) {
+  private injectFakeData(data: Aurum) {
     // Reference to the input html elements
     const element: HTMLElement = document.querySelector('#data1') as HTMLElement;
     const element2: HTMLElement = document.querySelector('#data2') as HTMLElement;

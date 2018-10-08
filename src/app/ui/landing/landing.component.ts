@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalService } from '../../util/modal.service';
 import { take } from 'rxjs/operators';
+import { FakeInjectService } from '../../util/fake-inject.service';
 
 @Component({
   selector: 'app-landing',
@@ -13,7 +14,8 @@ export class LandingComponent implements OnInit {
   inputResult: string;
   messageResult: boolean;
 
-  constructor(private modalService: ModalService) { }
+  constructor(private fakeInject: FakeInjectService,
+              private modalService: ModalService) { }
 
   ngOnInit() {
     console.log('FROM component | Initizalized it...');
@@ -48,4 +50,7 @@ export class LandingComponent implements OnInit {
       });
   }
 
+  useSampleData() {
+    this.fakeInject.startInjection();
+  }
 }

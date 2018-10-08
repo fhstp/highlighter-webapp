@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { FakeInjectService } from './util/fake-inject.service';
 import { DataStorageService } from './shared/data-storage.service';
 
 @Component({
@@ -10,8 +9,7 @@ import { DataStorageService } from './shared/data-storage.service';
 export class AppComponent {
   title = 'app';
 
-  constructor(private fakeInject: FakeInjectService,
-              private dataStorage: DataStorageService) { }
+  constructor(private dataStorage: DataStorageService) { }
 
   /**
    * This method is executed once the inpu arrives in the hidden input fields and sets the
@@ -21,6 +19,8 @@ export class AppComponent {
   onInputData(event: any) {
     const data = event.target.value;
     const idOfData = event.target.id;
+
+    console.log('READ from ', idOfData, ' input field with data: ', data);
 
     this.dataStorage.changeData(JSON.parse(data), idOfData);
   }
