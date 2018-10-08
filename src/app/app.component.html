@@ -12,7 +12,7 @@
 <input type="text" id="data2" class="totallyHidden" (input)="onInputData($event)">
 
 <!-- Fancy loader-->
-<div class="loader">
+<div *ngIf="loading" class="loader">
   <div class="face face1">
     <div class="circle"></div>
   </div>
