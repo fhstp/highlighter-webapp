@@ -24,23 +24,35 @@ export class FakeInjectService {
    * @param data we previously load form a local file using another service
    */
   private injectFakeData(data: Aurum) {
-    // Reference to the input html elements
+    // Reference to the input html element
     const element: HTMLElement = document.querySelector('#data1') as HTMLElement;
-    const element2: HTMLElement = document.querySelector('#data2') as HTMLElement;
     // Create event to trigger it as we listen for this in the other component
     const event = new Event('input', {
       'bubbles': true,
       'cancelable': true
     });
 
-    // Perfrom the injection and trigger the events for both input fields
+    // Perfrom the injection and trigger the event for one input filed only after 2 seconds.
     setTimeout(function () {
-      console.log('FROM service | injected the data into the input 1 and 2 fields')
+      console.log('FROM service | injected the data into the input 1 field')
       element.setAttribute('value', JSON.stringify(data));
       element.dispatchEvent(event);
-
-      element2.setAttribute('value', JSON.stringify(data));
-      element2.dispatchEvent(event);
     }, 2000);
+  }
+
+  injectSecondData() {
+    const element2: HTMLElement = document.querySelector('#data2') as HTMLElement;
+    const sampleData = {
+      found_occurences: [{}],
+      markupString: ['AllgemeineIm Folgenden möchten wir Ihnen unsere Allgemeinen Geschäftsbedingungen vorstellen,...'],
+      link: 'https://www.zalando.at/zalando-agb/'
+    };
+    const event = new Event('input', {
+      bubbles: true,
+      cancelable: true
+    });
+
+    element2.setAttribute('value', JSON.stringify(sampleData));
+    element2.dispatchEvent(event);
   }
 }

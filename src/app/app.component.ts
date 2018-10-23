@@ -36,7 +36,7 @@ export class AppComponent {
   }
 
   /**
-   * This method is executed once the inpu arrives in the hidden input fields and sets the
+   * This method is executed once the input arrives in the hidden input fields and sets the
    * data in the data storage according to the input id (data1 or data2) are possible.
    * @param event that is triggered by the user for example
    */

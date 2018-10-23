@@ -11,8 +11,14 @@ import { DataStorageService } from '../../shared/data-storage.service';
 export class VizComponent implements OnInit {
 
   private storedData: Aurum;
+  private storedData2: Aurum;
+
+  isComparison: boolean;
   firstWebsiteName: string;
+  secondWebsiteName: string;
+
   @ViewChild('dataContainer') dataContainer: ElementRef;
+  @ViewChild('dataContainer2') dataContainer2: ElementRef;
 
   constructor(private dataStorage: DataStorageService) { }
 
@@ -21,10 +27,25 @@ export class VizComponent implements OnInit {
    * retrieve the data upon arrival.
    */
   ngOnInit() {
+    // Check if we are in comparison mode or not
+    this.isComparison = this.dataStorage.isComparsion;
+
     this.dataStorage.currentData.subscribe((data) => {
+      console.log('triggered first data storage... observable');
+
       this.storedData = data;
       this.renderText(this.storedData);
     });
+
+    // We need to subscribe only if its a comparison
+    if (this.isComparison) {
+      this.dataStorage.currentData2.subscribe((data) => {
+        console.log('triggered second data storage... observable');
+
+        this.storedData2 = data;
+        this.renderSecondText(this.storedData2);
+      });
+    }
   }
 
   /**
@@ -32,11 +53,22 @@ export class VizComponent implements OnInit {
    * @param data to show to the user
    */
   private renderText(data: Aurum) {
-    console.log('FROM component | Inside renderText() function: ', data);
+    console.log('FROM component | Inside renderText() function (ONE INPUT).');
 
     this.firstWebsiteName = data.link;
-
     const stringToPrint = data.markupString.join(' ');
     this.dataContainer.nativeElement.innerHTML = stringToPrint;
+  }
+
+  /**
+   * This method is only used if we are in comparison mode.
+   * @param data to show in the second input
+   */
+  private renderSecondText(data: Aurum) {
+    console.log('FROM component | Inside renderSecondText() function (TWO INPUTS)');
+
+    this.secondWebsiteName = data.link;
+    const stringToPrint = data.markupString.join(' ');
+    this.dataContainer2.nativeElement.innerHTML = stringToPrint;
   }
 }

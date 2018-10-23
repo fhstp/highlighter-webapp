@@ -21,7 +21,6 @@ export class LandingComponent implements OnInit {
     console.log('FROM component | Initizalized it...');
   }
 
-
   /**
    * We are using the .take() operator here in order to directly unsubscribe after the first value is
    * recived and close the stream.
@@ -52,5 +51,9 @@ export class LandingComponent implements OnInit {
 
   useSampleData() {
     this.fakeInject.startInjection();
+  }
+
+  useSecondData() {
+    this.fakeInject.injectSecondData();
   }
 }

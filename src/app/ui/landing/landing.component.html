@@ -7,22 +7,30 @@
   <br />
   <br />
 
-  <div class="row" style="margin-bottom: 10px;">
-    <div class="col-md-12">
-      Example Dialogs (<small>Will be removed later... just for testing out dialogs</small>):</div>
-  </div>
-  <div class="row">
-    <div class="col-md-4">
-      <button type="button" class="btn btn-outline-dark" (click)="openConfirm()">Confirm Test</button>
-      <p>Confirmation dialog Ergebnis: {{ confirmResult }}</p>
+  <div style="border: 1px dashed tomato; padding: 5px; background: lightgrey;">
+    <div class="row" style="margin-bottom: 10px;">
+      <div class="col-md-12">
+        Example Dialogs (<small>Will be removed later... just for testing out dialogs</small>):</div>
     </div>
-    <div class="col-md-4">
-      <button type="button" class="btn btn-outline-dark" (click)="openInput()">Input Test</button>
-      <p>Input dialog Ergebnis: {{ inputResult }}</p>
+    <div class="row">
+      <div class="col-md-4">
+        <button type="button" class="btn btn-outline-dark" (click)="openConfirm()">Confirm Test</button>
+        <p>Confirmation dialog Ergebnis: {{ confirmResult }}</p>
+      </div>
+      <div class="col-md-4">
+        <button type="button" class="btn btn-outline-dark" (click)="openInput()">Input Test</button>
+        <p>Input dialog Ergebnis: {{ inputResult }}</p>
+      </div>
+      <div class="col-md-4">
+        <button type="button" class="btn btn-outline-dark" (click)="openMessage()">Message Test</button>
+        <p>Message dialog Ergebnis: {{ messageResult }}</p>
+      </div>
     </div>
-    <div class="col-md-4">
-      <button type="button" class="btn btn-outline-dark" (click)="openMessage()">Message Test</button>
-      <p>Message dialog Ergebnis: {{ messageResult }}</p>
+    <div class="row">
+      <div class="col-md-8">
+        <p><strong>REMOVE later: </strong> Only for testing purpose</p>
+        <button class="btn btn-danger" (click)="useSecondData()">Second Dataset</button>
+      </div>
     </div>
   </div>
 

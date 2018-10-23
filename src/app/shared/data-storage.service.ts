@@ -11,6 +11,9 @@ export class DataStorageService {
     link: 'www.example.com'
   };
 
+  // Global variable that is used to see if we are in comparsion mode or not
+  private _isComparsion: boolean;
+
   // One input field
   private dataStore = new BehaviorSubject<Aurum>(this.defaultData);
   public readonly currentData = this.dataStore.asObservable();
@@ -18,6 +21,20 @@ export class DataStorageService {
   // The other input field
   private dataStore2 = new BehaviorSubject<Aurum>(this.defaultData);
   public readonly currentData2 = this.dataStore2.asObservable();
+
+  /**
+   * Just initialize some stuff.
+   */
+  constructor() {
+    this._isComparsion = false;
+  }
+
+  /**
+   * Getter method for the check if we are in comparsion method or not.
+   */
+  get isComparsion(): boolean {
+    return this._isComparsion;
+  }
 
   /**
    * This method is used to save the data in the respective store and notify all subscribed
@@ -31,6 +48,7 @@ export class DataStorageService {
         this.dataStore.next(message);
         break;
       case 'data2':
+        this._isComparsion = true;
         this.dataStore2.next(message);
         break;
       default:
