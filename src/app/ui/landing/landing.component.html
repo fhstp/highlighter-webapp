@@ -1,3 +1,53 @@
 <div class="container">
-  <h1>Highlighter Test</h1>
+  <h1>Highlighter</h1>
+  <small>Hightlighter ist ein visueller assitent für lange texte. Kommt es aufs Detail an?
+    <strong>Ja tut es!</strong></small>
+  <hr />
+
+  <br />
+  <br />
+
+  <div style="border: 1px dashed tomato; padding: 5px; background: lightgrey;">
+    <div class="row" style="margin-bottom: 10px;">
+      <div class="col-md-12">
+        Example Dialogs (<small>Will be removed later... just for testing out dialogs</small>):</div>
+    </div>
+    <div class="row">
+      <div class="col-md-4">
+        <button type="button" class="btn btn-outline-dark" (click)="openConfirm()">Confirm Test</button>
+        <p>Confirmation dialog Ergebnis: {{ confirmResult }}</p>
+      </div>
+      <div class="col-md-4">
+        <button type="button" class="btn btn-outline-dark" (click)="openInput()">Input Test</button>
+        <p>Input dialog Ergebnis: {{ inputResult }}</p>
+      </div>
+      <div class="col-md-4">
+        <button type="button" class="btn btn-outline-dark" (click)="openMessage()">Message Test</button>
+        <p>Message dialog Ergebnis: {{ messageResult }}</p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-8">
+        <p><strong>REMOVE later: </strong> Only for testing purpose</p>
+        <button class="btn btn-danger" (click)="useSecondData()">Second Dataset</button>
+      </div>
+    </div>
+  </div>
+
+  <br />
+  <br />
+
+  <div class="card text-center">
+    <div class="card-body">
+      <h5 class="card-title">Verwende Beispieldaten</h5>
+      <p class="card-text">Es ist möglich Beispieldaten von <a href="www.bergzeit.at/agbs" target="_blank">
+          Bergzeit</a> zu verwenden um die Visualisierung bzw. das Highlighten in Aktion zu sehen. Es wird hier nur
+        ein rechtlicher Text verarbeitet bzw. verwendet, weshalb keine "compare" Funktionalität vorhanden ist.</p>
+      <p>Um die Beispieldaten zu laden und zur Darstellung zu gelangen, klicke einfach auf den Button!</p>
+      <a routerLink="/viz" class="btn btn-primary" (click)="useSampleData()">Beispieldaten laden</a>
+    </div>
+    <div class="card-footer text-muted">
+      Die <strong>Webextension</strong> ist verfügbar unter: ...
+    </div>
+  </div>
 </div>
