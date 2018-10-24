@@ -30,6 +30,7 @@ export class VizComponent implements OnInit {
     // Check if we are in comparison mode or not
     this.isComparison = this.dataStorage.isComparsion;
 
+    // TODO: Add maybe take(1) as we only need the values once anc can unsubscribe later
     this.dataStorage.currentData.subscribe((data) => {
       console.log('triggered first data storage... observable');
 

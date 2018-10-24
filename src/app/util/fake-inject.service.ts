@@ -43,8 +43,9 @@ export class FakeInjectService {
   injectSecondData() {
     const element2: HTMLElement = document.querySelector('#data2') as HTMLElement;
     const sampleData = {
+      searchTerms: ['Allgemein', 'Ihnen'],
       found_occurences: [{}],
-      markupString: ['AllgemeineIm Folgenden möchten wir Ihnen unsere Allgemeinen Geschäftsbedingungen vorstellen,...'],
+      markupString: ['Allgemeine Im Folgenden möchten wir Ihnen unsere Allgemeinen Geschäftsbedingungen vorstellen,...'],
       link: 'https://www.zalando.at/zalando-agb/'
     };
     const event = new Event('input', {
