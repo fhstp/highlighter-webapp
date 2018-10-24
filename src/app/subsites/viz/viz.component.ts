@@ -57,8 +57,36 @@ export class VizComponent implements OnInit {
     console.log('FROM component | Inside renderText() function (ONE INPUT).');
 
     this.firstWebsiteName = data.link;
-    const stringToPrint = data.markupString.join(' ');
+    const stringToPrint = data.markupString.map(v => {
+      if (v === '\n') {
+        return v;
+      } else {
+        return '<span class=\'js-detect-wrap\'>' + v + '</span> ';
+      }
+    }).join('');
     this.dataContainer.nativeElement.innerHTML = stringToPrint;
+
+    // based on https://github.com/xdamman/js-line-wrap-detector/blob/master/src/lineWrapDetector.js
+    const spans = this.dataContainer.nativeElement.getElementsByClassName('js-detect-wrap');
+
+    let lastOffset = 0, line = [], l = 0;
+    const lines = [];
+    for (let i = 0; i < spans.length; i++) {
+      const offset = spans[i].offsetTop + spans[i].getBoundingClientRect().height;
+      if (offset === lastOffset) {
+        line.push(spans[i]);
+      } else {
+        if (line.length > 0) {
+          lines[l++] = line;
+        }
+
+        line = [spans[i]];
+      }
+      lastOffset = offset;
+    }
+    lines.push(line);
+    console.log(lines.length + ' lines');
+    console.log(lines);
   }
 
   /**
