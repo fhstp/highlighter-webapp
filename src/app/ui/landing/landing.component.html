@@ -1,13 +1,178 @@
 <div class="container">
-  <h1>Highlighter</h1>
-  <small>Hightlighter ist ein visueller assitent für lange texte. Kommt es aufs Detail an?
+  <!--<h1>Highlighter</h1>
+  <small>Hightlighter ist ein visueller Assitent für lange Rechtstexte. Kommt es aufs Detail an?
     <strong>Ja tut es!</strong></small>
-  <hr />
+  <hr />-
+
+  <br />
+  <br />--->
+
+  <!--First card-->
+  <div class="row">
+    <div class='col-md-12'>
+      <div class='text-center'>
+        <div class='container'>
+          <!--<h2 class='jumbotron-heading'>Highligher</h2>-->
+          <p><img src="assets/logo.png" width="200px" /></p>
+          Hightlighter ist ein visueller Assitent für lange Rechtstexte. Kommt es aufs Detail an?
+          <strong>Ja tut es!</strong>
+          <br />
+          <br />
+          <p><img src="assets/placeholder_highlighter.png" /></p>
+
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <br />
+  <br />
+
+  <div class="card text-center">
+      <div class="card-body">
+        <h5 class="card-title">Highlighter in Aktion</h5>
+        <p class="card-text">Es ist möglich Beispieldaten von <a href="www.bergzeit.at/agbs" target="_blank">
+            Bergzeit</a> zu verwenden um die Visualisierung bzw. das Highlighten in Aktion zu sehen. Es wird hier nur
+          ein rechtlicher Text verarbeitet bzw. verwendet, weshalb keine "compare" Funktionalität vorhanden ist.</p>
+        <p>Um die Beispieldaten zu laden und zur Darstellung zu gelangen, klicke einfach auf den Button!</p>
+        <a routerLink="/viz" class="btn btn-primary" (click)="useSampleData()">Beispieldaten laden</a>
+      </div>
+      <!--<div class="card-footer text-muted">
+        Die <strong>Webextension</strong> ist verfügbar unter: ...
+      </div>-->
+    </div>
+
+    <br />
+    <br />
+
+
+
+  <div class="container-fluid bg_color">
+    <div class="row">
+      <div class="col-md-12">
+        <h4 class="text-center">
+          Wie funktioniert das Tool HighLighter?
+        </h4>
+        <br />
+        <br />
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <p><img src="assets/placeholder_highlighter.png" width="400px" /></p>
+        <p class="blocksatz">1) Um das Tool zu nutzen musst du dir eine Webextension herunterladen und installieren. </p>
+
+      </div>
+      <div class="col-md-6">
+        <p><img src="assets/placeholder_highlighter.png" width="400px" /></p>
+        <p class="blocksatz"> 
+          2) Navigiere zu den AGBs des Onlineshops. Markiere den den Rechtstext, den du mit HighLighter analysieren
+          möchtest. Dann klicke auf den HighLighter Button in der Browser Leiste.
+          Das Tool kopiert automatisch den Text in das Tool. Du brauchst nichts dazu tun.
+        </p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <p><img src="assets/placeholder_highlighter.png" width="400px" /></p>
+        <p class="blocksatz">
+          3) Treffe nun die Kriterienauswahl. Du kannst auch eigene Kriterien hinzufügen indem du auf den kleinen
+          Button klickst.
+          Anhand dieser Kriterien wird dein Text durchsucht und im nächsten Schritt visuell hervorgehoben.
+        </p>
+      </div>
+      <div class="col-md-6">
+        <p><img src="assets/placeholder_highlighter.png" width="400px" /></p>
+        <p class="blocksatz">
+          4) Checke deine AGBs indem Du auf den Button klickst.
+          Du wirst jetzt auf der Webseite auf einen eigenen Bereich geleitet, wo du deine AGB analysieren kannst.
+        </p>
+
+      </div>
+    </div>
+  </div>
 
   <br />
   <br />
 
-  <div style="border: 1px dashed tomato; padding: 5px; background: lightgrey;">
+
+  <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-12">
+          <h4 class="text-center">
+              Vergleiche zweier AGBs miteinander...
+          </h4>
+          <br />
+          <br />
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <p><img src="assets/placeholder_highlighter.png" width="400px" /></p>
+          <p class="blocksatz">1) Zuerst kannst du den ersten Rechtstext laden, 
+            indem du ihn markierst und auf den  HighLighter Button klickst. 
+            Er wird dann unter dann in der Browser Extensions zwischengespeichert. 
+            Du kannst die Kriterienauswahl schließen.
+            </p>
+  
+        </div>
+        <div class="col-md-6">
+          <p><img src="assets/placeholder_highlighter.png" width="400px" /></p>
+          <p class="blocksatz">
+            2) Gehe zum anderen Onlineshops, 
+            markiere den zweiten Rechtstext und klicke auf den HighLighter Button. 
+          </p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <p><img src="assets/placeholder_highlighter.png" width="400px" /></p>
+          <p class="blocksatz">
+            3) Wähle jetzt die Vergleichsfunktion aus.
+          </p>
+        </div>
+        <div class="col-md-6">
+          <p><img src="assets/placeholder_highlighter.png" width="400px" /></p>
+          <p class="blocksatz">
+            4) Du kannst den ersten Rechtstext aus den 
+            bereits geladene AGBs auswählen. 
+            Du kannst auch einen AGB-Text analysieren, 
+            indem Du die AGBs aus dem Onlineshop in das 
+            Textfeld hinein kopierst und auch den Link des Onlineshops befüllst. 
+          </p>  
+        </div>
+      </div>
+      <div class="row">
+          <div class="col-md-6">
+            <p><img src="assets/placeholder_highlighter.png" width="400px" /></p>
+            <p class="blocksatz">
+              5) Treffe nun wieder deine Kriterienauswahl. 
+            </p>
+          </div>
+          <div class="col-md-6">
+            <p><img src="assets/placeholder_highlighter.png" width="400px" /></p>
+            <p class="blocksatz">
+              6) Vergleich nun deine AGBs, indem Du auf den Button klickst. 
+              Du wirst wieder auf eine Webseite in einen eigenen Bereiche geleitet, 
+              wo du die beiden AGB-Texte miteinander vergleichen kannst. 
+            </p>  
+          </div>
+        </div>
+
+
+
+    </div>
+
+
+
+
+
+
+
+
+
+
+  <!--<div style="border: 1px dashed tomato; padding: 5px; background: lightgrey;">
     <div class="row" style="margin-bottom: 10px;">
       <div class="col-md-12">
         Example Dialogs (<small>Will be removed later... just for testing out dialogs</small>):</div>
@@ -32,22 +197,10 @@
         <button class="btn btn-danger" (click)="useSecondData()">Second Dataset</button>
       </div>
     </div>
-  </div>
+  </div>-->
 
   <br />
   <br />
 
-  <div class="card text-center">
-    <div class="card-body">
-      <h5 class="card-title">Verwende Beispieldaten</h5>
-      <p class="card-text">Es ist möglich Beispieldaten von <a href="www.bergzeit.at/agbs" target="_blank">
-          Bergzeit</a> zu verwenden um die Visualisierung bzw. das Highlighten in Aktion zu sehen. Es wird hier nur
-        ein rechtlicher Text verarbeitet bzw. verwendet, weshalb keine "compare" Funktionalität vorhanden ist.</p>
-      <p>Um die Beispieldaten zu laden und zur Darstellung zu gelangen, klicke einfach auf den Button!</p>
-      <a routerLink="/viz" class="btn btn-primary" (click)="useSampleData()">Beispieldaten laden</a>
-    </div>
-    <div class="card-footer text-muted">
-      Die <strong>Webextension</strong> ist verfügbar unter: ...
-    </div>
-  </div>
+
 </div>
