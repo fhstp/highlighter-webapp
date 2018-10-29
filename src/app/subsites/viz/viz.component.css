@@ -1,5 +1,10 @@
+
+.contentParent {
+    display: flex;
+}
+
 .textContainer {
-    width: 90%;
+    width: 75%;
     height: auto;
     word-break: keep-all;
     white-space: pre-wrap;
@@ -12,4 +17,10 @@
     background-clip: padding-box;
     border: 1px solid #ced4da;
     border-radius: .25rem;
+}
+
+.textOverview {
+    width: 15%;
+    height: 600px;
+    background: skyblue;
 }

@@ -3,6 +3,7 @@ export interface Markup {
     start: number;
     end: number;
     class: string;
+    text: string;
 }
 
 export class LineModel {
