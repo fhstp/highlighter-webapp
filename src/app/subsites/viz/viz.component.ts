@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef, ViewEncapsulation } from '@angular/core';
 import { Aurum } from '../../shared/aurum.model';
 import { DataStorageService } from '../../shared/data-storage.service';
+import { LineModel, Markup } from '../../shared/line.model';
 
 @Component({
   selector: 'app-viz',
@@ -71,6 +72,8 @@ export class VizComponent implements OnInit {
 
     let lastOffset = 0, line = [], l = 0;
     const lines = [];
+    const mLines = [];
+
     for (let i = 0; i < spans.length; i++) {
       const offset = spans[i].offsetTop + spans[i].getBoundingClientRect().height;
       if (offset === lastOffset) {
@@ -78,6 +81,8 @@ export class VizComponent implements OnInit {
       } else {
         if (line.length > 0) {
           lines[l++] = line;
+
+          mLines.push(this.domToModel(lastOffset, line));
         }
 
         line = [spans[i]];
@@ -85,8 +90,25 @@ export class VizComponent implements OnInit {
       lastOffset = offset;
     }
     lines.push(line);
-    console.log(lines.length + ' lines');
-    console.log(lines);
+    mLines.push(this.domToModel(lastOffset, line));
+
+    console.log(mLines.length + ' lines');
+    console.log(mLines);
+  }
+
+  private domToModel(lastOffset: number, line: Array<HTMLBaseElement>): LineModel {
+    return new LineModel(lastOffset,
+      // markupText : remove detect-wrap spans & join
+      line.map((v) =>  v.innerHTML).join(' '),
+      // markup: one "colored" block for each token
+      line.map((v) => {
+        const r = v.getBoundingClientRect();
+        let cat = 'x-none';
+        if (v.innerHTML.startsWith('<span')) {
+          cat = v.innerHTML.replace(/<span class=(?:\"|\')([a-z]*)(?:\"|\')>.*/, '$1');
+        }
+        return {start: r.left, end: r.right, class: cat};
+      }));
   }
 
   /**
