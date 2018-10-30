@@ -7,5 +7,24 @@
 
 .blocksatz {
     text-align: justify;
-    width: 80%;
+    width: 90%;
+}
+
+.blue_highlight {
+    color: #007bff;
+}
+
+.info_box {
+    border: 1px solid black;
+    padding: 5px;
+}
+
+/* img:hover {
+    transform: scale(2.0);
+    left: 50%;
+    z-index: 1000 !important;
+} */
+
+.heading_accordion {
+    font-size: 1.4em !important;
 }
