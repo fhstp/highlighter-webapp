@@ -4,6 +4,7 @@ import { Aurum } from '../../shared/aurum.model';
 import { DataStorageService } from '../../shared/data-storage.service';
 import { LineModel, Markup } from '../../shared/line.model';
 import { domRendererFactory3 } from '@angular/core/src/render3/interfaces/renderer';
+import { LineWrapper } from 'src/app/util/line-wrapper';
 
 @Component({
   selector: 'app-viz',
@@ -63,59 +64,16 @@ export class VizComponent implements OnInit {
   private renderText(data: Aurum): Array<LineModel>  {
     console.log('FROM component | Inside renderText() function (ONE INPUT).');
 
+    const lw = new LineWrapper();
+    lw.initByElement(this.dataContainer.nativeElement);
+    const mLines = lw.wrapText(data.markupString, 600);
+
     this.firstWebsiteName = data.link;
-    const stringToPrint = data.markupString.map(v => {
-      if (v === '\n') {
-        return v;
-      } else {
-        return '<span class=\'js-detect-wrap\'>' + v + '</span> ';
-      }
-    }).join('');
+
+    const stringToPrint = mLines.map((d) => d.markedText).join('\n');
     this.dataContainer.nativeElement.innerHTML = stringToPrint;
 
-    // based on https://github.com/xdamman/js-line-wrap-detector/blob/master/src/lineWrapDetector.js
-    const spans = this.dataContainer.nativeElement.getElementsByClassName('js-detect-wrap');
-
-    let lastOffset = 0, line = [], l = 0;
-    const lines = [];
-    const mLines = [];
-
-    for (let i = 0; i < spans.length; i++) {
-      const offset = spans[i].offsetTop + spans[i].getBoundingClientRect().height;
-      if (offset === lastOffset) {
-        line.push(spans[i]);
-      } else {
-        if (line.length > 0) {
-          lines[l++] = line;
-
-          mLines.push(this.domToModel(lastOffset, line));
-        }
-
-        line = [spans[i]];
-      }
-      lastOffset = offset;
-    }
-    lines.push(line);
-    mLines.push(this.domToModel(lastOffset, line));
-
-    console.log(mLines.length + ' lines');
-    console.log(mLines);
     return mLines;
-  }
-
-  private domToModel(lastOffset: number, line: Array<HTMLBaseElement>): LineModel {
-    return new LineModel(lastOffset,
-      // markupText : remove detect-wrap spans & join
-      line.map((v) =>  v.innerHTML).join(' '),
-      // markup: one "colored" block for each token
-      line.map((v) => {
-        const r = v.getBoundingClientRect();
-        let cat = 'x-none';
-        if (v.innerHTML.startsWith('<span')) {
-          cat = v.innerHTML.replace(/<span class=(?:\"|\')([a-z]*)(?:\"|\')>.*/, '$1');
-        }
-        return {start: r.left, end: r.right, class: cat, text: v.innerHTML};
-      }));
   }
 
   private renderOverview(textModel: Array<LineModel>) {
@@ -138,6 +96,7 @@ export class VizComponent implements OnInit {
     const x = d3.scaleLinear()
       .rangeRound([0, width])
       .domain([minLineStart, maxLineEnd]);
+    // console.log('xdom', minLineStart, maxLineEnd);
 
     const y = d3.scaleLinear()
       .rangeRound([0, height])
@@ -154,7 +113,7 @@ export class VizComponent implements OnInit {
       .domain(flatClasses);
 
     /// indicator of unformated text
-    textModel.forEach((d) => { d.markup.forEach((m) => { if (m.start < 100) {console.log('Warning: ', m); } } ); } );
+    // textModel.forEach((d) => { d.markup.forEach((m) => { if (m.start < 100) {console.log('Warning: ', m); } } ); } );
 
     const svg = d3.select('#dataOverview');
     const g = svg.append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
@@ -171,8 +130,8 @@ export class VizComponent implements OnInit {
         .attr('width', (d) => {
           const w = x(d.end) - x(d.start);
           if (w < 1) {
-            console.log(d);
-            console.log(x(d.start), x(d.end), w);
+            // console.log(d);
+            // console.log(x(d.start), x(d.end), w);
             return 1;
           } else {
             return x(d.end) - x(d.start);

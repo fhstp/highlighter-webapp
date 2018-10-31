@@ -1,5 +1,5 @@
 
-export interface Markup {
+export class Markup {
     start: number;
     end: number;
     class: string;

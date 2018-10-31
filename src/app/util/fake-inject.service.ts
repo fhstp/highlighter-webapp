@@ -34,7 +34,7 @@ export class FakeInjectService {
 
     // Perfrom the injection and trigger the event for one input filed only after 2 seconds.
     setTimeout(function () {
-      console.log('FROM service | injected the data into the input 1 field')
+      console.log('FROM service | injected the data into the input 1 field');
       element.setAttribute('value', JSON.stringify(data));
       element.dispatchEvent(event);
     }, 2000);
