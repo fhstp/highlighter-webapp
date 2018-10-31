@@ -5,6 +5,7 @@ import { DataStorageService } from '../../shared/data-storage.service';
 import { LineModel, Markup } from '../../shared/line.model';
 import { domRendererFactory3 } from '@angular/core/src/render3/interfaces/renderer';
 import { LineWrapper } from 'src/app/util/line-wrapper';
+import { isNullOrUndefined } from 'util';
 
 @Component({
   selector: 'app-viz',
@@ -18,6 +19,7 @@ export class VizComponent implements OnInit {
   private storedData2: Aurum;
 
   private textModel: Array<LineModel>;
+  private wrapper: LineWrapper;
 
   isComparison: boolean;
   firstWebsiteName: string;
@@ -42,8 +44,8 @@ export class VizComponent implements OnInit {
       console.log('triggered first data storage... observable');
 
       this.storedData = data;
-      this.textModel = this.renderText(this.storedData);
-      this.renderOverview(this.textModel);
+
+      this.renderText(this.storedData);
     });
 
     // We need to subscribe only if its a comparison
@@ -61,19 +63,31 @@ export class VizComponent implements OnInit {
    * This method is currently used to render just the received data and show it on the screen.
    * @param data to show to the user
    */
-  private renderText(data: Aurum): Array<LineModel>  {
+  private renderText(data: Aurum) {
     console.log('FROM component | Inside renderText() function (ONE INPUT).');
-
-    const lw = new LineWrapper();
-    lw.initByElement(this.dataContainer.nativeElement);
-    const mLines = lw.wrapText(data.markupString, 600);
 
     this.firstWebsiteName = data.link;
 
-    const stringToPrint = mLines.map((d) => d.markedText).join('\n');
-    this.dataContainer.nativeElement.innerHTML = stringToPrint;
+    if (isNullOrUndefined(this.wrapper)) {
+      this.wrapper = new LineWrapper();
+      this.wrapper.initByElement(this.dataContainer.nativeElement);
+    }
+    this.textModel = this.wrapper.wrapText(data.markupString, 600);
 
-    return mLines;
+    this.renderOverview(this.textModel);
+    this.renderDetail();
+  }
+
+  private renderDetail() {
+    // calculate extent based on heigth of detail comp & measured lineHeight
+    const detailHeight = this.dataContainer.nativeElement.getBoundingClientRect().height
+      // substract 40% of a line height
+      - this.wrapper.getLineHeight() * 0.4;
+    const linesToShow = Math.floor(detailHeight / this.wrapper.getLineHeight());
+    console.log('extent: ' + detailHeight + ' / ' + this.wrapper.getLineHeight() + ' = ' + linesToShow);
+
+    const stringToPrint = this.textModel.slice(0, linesToShow).map((d) => d.markedText).join('\n');
+    this.dataContainer.nativeElement.innerHTML = stringToPrint;
   }
 
   private renderOverview(textModel: Array<LineModel>) {

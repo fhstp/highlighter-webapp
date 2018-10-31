@@ -6,16 +6,17 @@ export class LineWrapper {
     private fontFam;
     private fontSize;
     private font_size_char;
-    private lineHeight;
+    private line_height;
 
     public initByElement(element) {
 
         this.fontFam = window.getComputedStyle(element, null).getPropertyValue('font-family');
         this.fontSize = window.getComputedStyle(element, null).getPropertyValue('font-size');
-        console.log('font ' + this.fontFam + ' ' + this.fontSize);
+        const cssLineHeight = window.getComputedStyle(element, null).getPropertyValue('line-height');
+        // console.log('font ' + this.fontFam + ' ' + this.fontSize);
 
-        this.initByFontSpec([this.fontFam], [this.fontSize], undefined);
-        console.log(this.font_size_char);
+        this.initByFontSpec([this.fontFam], [this.fontSize], cssLineHeight);
+        // console.log(this.font_size_char);
     }
 
     /**
@@ -30,10 +31,10 @@ export class LineWrapper {
      * @copyright (c) 2010 Benjamin Arthur Lupton {@link http://www.balupton.com}
      * @license Attribution-ShareAlike 2.5 Generic {@link http://creativecommons.org/licenses/by-sa/2.5/}
      */
-    public initByFontSpec(fonts: Array<string>, sizes: Array<string>, chars: Array<string>) {
+    public initByFontSpec(fonts: Array<string>, sizes: Array<string>, cssLineHeight: string) {
         const lfonts = fonts || ['Arial', 'Times'],
             lsizes = sizes || ['12px', '14px'],
-            lchars = chars || ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
+            lchars = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
                 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'y', 'x', 'z',
                 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
                 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'Y', 'X', 'Z',
@@ -44,7 +45,6 @@ export class LineWrapper {
                 ';', "'", ':', '"',
                 ',', '.', '/', '<', '>', '?', ' '],
             font_size_char = {},
-            line_height = {},
 
             $body = d3.select('body'),
             $span = $body.append('span')
@@ -56,11 +56,9 @@ export class LineWrapper {
         lfonts.forEach((font, i) => {
             $span.style('font-family', font);
             font_size_char[font] = font_size_char[font] || {};
-            line_height[font] = line_height[font] || {};
             lsizes.forEach((size) => {
                 $span.style('font-size', size);
                 font_size_char[font][size] = font_size_char[font][size] || {};
-                line_height[font][size] = line_height[font][size] || {};
                 lchars.forEach((char) => {
                     if (char === ' ') {
                         $span.html('&nbsp;');
@@ -70,19 +68,36 @@ export class LineWrapper {
                     const width = ($span.node() as HTMLElement).getBoundingClientRect().width || 0;
                     font_size_char[font][size][char] = width;
                 });
-                // guess line height
-                $span.html('M');
-                const oneline = ($span.node() as HTMLElement).getBoundingClientRect().height || 0;
-                $span.html('M<br>M');
-                const twoline = ($span.node() as HTMLElement).getBoundingClientRect().height || 0;
+            });
+        });
+        $span.remove();
+        this.font_size_char = font_size_char;
+
+        // guess line height
+        const line_height = {};
+        const $div = $body.append('div')
+            .style('padding', 0)
+            .style('margin', 0)
+            .style('letter-spacing', 0)
+            .style('word-spacing', 0)
+            .style('line-height', cssLineHeight);
+
+        lfonts.forEach((font, i) => {
+            $div.style('font-family', font);
+            line_height[font] = line_height[font] || {};
+            lsizes.forEach((size) => {
+                $div.style('font-size', size);
+                line_height[font][size] = line_height[font][size] || {};
+                $div.html('M');
+                const oneline = ($div.node() as HTMLElement).getBoundingClientRect().height || 0;
+                $div.html('M<br>M');
+                const twoline = ($div.node() as HTMLElement).getBoundingClientRect().height || 0;
                 line_height[font][size] = twoline - oneline;
                 console.log('h ' + twoline + ' ' + oneline);
             });
         });
-
-        $span.remove();
-
-        this.font_size_char = font_size_char;
+        $div.remove();
+        this.line_height = line_height;
     }
 
     public wrapText(tokens: Array<string>, maxLineWidth: number): Array<LineModel> {
@@ -152,5 +167,9 @@ export class LineWrapper {
         mLines.push(new LineModel(yPos++, markedText, cTokens));
 
         return mLines;
+    }
+
+    public getLineHeight() {
+        return this.line_height[this.fontFam][this.fontSize];
     }
 }
