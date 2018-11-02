@@ -14,12 +14,14 @@ export class DataStorageService {
 
   // Global variable that is used to see if we are in comparsion mode or not
   private _isComparsion: boolean;
+  // The search terms of both
+  private _searchTermsInput: Array<String>;
 
-  // One input field
+  // One input field -- #data1
   private dataStore = new BehaviorSubject<Aurum>(this.defaultData);
   public readonly currentData = this.dataStore.asObservable();
 
-  // The other input field
+  // The other input field -- #data2
   private dataStore2 = new BehaviorSubject<Aurum>(this.defaultData);
   public readonly currentData2 = this.dataStore2.asObservable();
 
@@ -31,10 +33,24 @@ export class DataStorageService {
   }
 
   /**
-   * Getter method for the check if we are in comparsion method or not.
+   * Getter method for the check if we are in comparsion mode or not.
    */
   get isComparsion(): boolean {
     return this._isComparsion;
+  }
+
+  /**
+   * Setter method for the check if we are in comparsion mode or not.
+   */
+  set isComparison(value: boolean) {
+    this._isComparsion = value;
+  }
+
+  /**
+   * Getter method in order to retrieve all the search terms;
+   */
+  get searchTermsInput(): Array<String> {
+    return this._searchTermsInput;
   }
 
   /**
@@ -49,7 +65,6 @@ export class DataStorageService {
         this.dataStore.next(message);
         break;
       case 'data2':
-        this._isComparsion = true;
         this.dataStore2.next(message);
         break;
       default:
