@@ -70,5 +70,7 @@ export class DataStorageService {
       default:
         break;
     }
+
+    this._searchTermsInput = message.searchTerms;
   }
 }

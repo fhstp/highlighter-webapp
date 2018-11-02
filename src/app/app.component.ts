@@ -55,7 +55,7 @@ export class AppComponent {
 
     // Cheap trick to not use the color generator twice as the attributes are the same for both
     if (this.isNotGenerated) {
-      this.colorGenerator.generateStyleRules(idOfData);
+      this.colorGenerator.generateStyleRules();
       this.isNotGenerated = false;
     }
   }

@@ -10,16 +10,24 @@ export class ColorGeneratorService {
 
   private styleSheet;
   private currentRules = new Map();
+  private criteriasArray: Array<String>;
+  private nColors: number;
 
-  generateStyleRules(type: string) {
+  generateStyleRules() {
+    // Cretae the empty stylesheet
     this.createStylesheet();
+    // Get the criterias now
+    this.criteriasArray = this.dataStorage.searchTermsInput;
+    this.nColors = this.criteriasArray.length;
 
-    if (type === 'data1') {
-    } else if (type === 'data2') {
-      console.log('Generate Styles for 2');
-    } else {
-      console.log('Do nothing');
-    }
+    // Generate the random colors next and the styles for each
+    const startColor = Math.random();
+    this.criteriasArray.forEach((crit, i) => {
+      const rgb = this.HSVtoRGB(startColor + (1 / this.nColors * i), 0.7, 1);
+      this.addRule(`.${crit.toLowerCase()}`,
+        `background-color: rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`);
+    });
+    console.log(this.currentRules);
   }
 
   /**
@@ -52,5 +60,37 @@ export class ColorGeneratorService {
     for (let i = 0; i < this.styleSheet.rules.length; i++) {
       this.styleSheet.removeRule(i);
     }
+  }
+
+  /**
+   * This method is used in order transform an hsv value to a rgb value.
+   * @param h hue
+   * @param s saturation
+   * @param v value
+   * @returns RGB object with 3 keys (r, g, b) and their values
+   */
+  private HSVtoRGB(h, s, v): {r: number, g: number, b: number} {
+    let r, g, b, i, f, p, q, t;
+    if (arguments.length === 1) {
+      s = h.s, v = h.v, h = h.h;
+    }
+    i = Math.floor(h * 6);
+    f = h * 6 - i;
+    p = v * (1 - s);
+    q = v * (1 - f * s);
+    t = v * (1 - (1 - f) * s);
+    switch (i % 6) {
+      case 0: r = v, g = t, b = p; break;
+      case 1: r = q, g = v, b = p; break;
+      case 2: r = p, g = v, b = t; break;
+      case 3: r = p, g = q, b = v; break;
+      case 4: r = t, g = p, b = v; break;
+      case 5: r = v, g = p, b = q; break;
+    }
+    return {
+      r: Math.round(r * 255),
+      g: Math.round(g * 255),
+      b: Math.round(b * 255)
+    };
   }
 }
