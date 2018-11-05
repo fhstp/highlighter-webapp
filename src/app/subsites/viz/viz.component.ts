@@ -21,6 +21,11 @@ export class VizComponent implements OnInit {
   private textModel: Array<LineModel>;
   private wrapper: LineWrapper;
 
+  private yExtent: [undefined, undefined] | [number, number];
+  private detailStart = 1;
+  private linesToShow = 10;
+  private brushScale;
+
   isComparison: boolean;
   firstWebsiteName: string;
   secondWebsiteName: string;
@@ -74,19 +79,31 @@ export class VizComponent implements OnInit {
     }
     this.textModel = this.wrapper.wrapText(data.markupString, 600);
 
-    this.renderOverview(this.textModel);
+    this.calculateSpace();
     this.renderDetail();
+    this.renderOverview(this.textModel);
   }
 
-  private renderDetail() {
-    // calculate extent based on heigth of detail comp & measured lineHeight
+  private calculateSpace() {
+    this.yExtent = d3.extent(this.textModel.map((l) => l.yPos));
+    this.detailStart = this.yExtent[0];
+
+    // calculate detail extent based on heigth of detail comp & measured lineHeight
     const detailHeight = this.dataContainer.nativeElement.getBoundingClientRect().height
       // substract 40% of a line height
       - this.wrapper.getLineHeight() * 0.4;
-    const linesToShow = Math.floor(detailHeight / this.wrapper.getLineHeight());
-    console.log('extent: ' + detailHeight + ' / ' + this.wrapper.getLineHeight() + ' = ' + linesToShow);
+    const possLinesToShow = Math.floor(detailHeight / this.wrapper.getLineHeight());
+    this.linesToShow = Math.min(possLinesToShow, this.yExtent[1] - this.yExtent[0]);
+    console.log('extent: ' + detailHeight + ' / ' + this.wrapper.getLineHeight() + ' = ' + this.linesToShow);
+  }
 
-    const stringToPrint = this.textModel.slice(0, linesToShow).map((d) => d.markedText).join('\n');
+  private renderDetail() {
+    console.log('FROM component | Inside renderDetail() function', this.detailStart, this.linesToShow);
+
+    const stringToPrint = this.textModel
+      .filter((d) => this.detailStart <= d.yPos && d.yPos <= (this.detailStart + this.linesToShow - 1))
+      .map((d) => d.markedText)
+      .join('\n');
     this.dataContainer.nativeElement.innerHTML = stringToPrint;
   }
 
@@ -96,7 +113,7 @@ export class VizComponent implements OnInit {
     // make sure we start clean
     this.dataOverview.nativeElement.innerHTML = '';
 
-    const margin = {top: 3, right: 2, bottom: 4, left: 2};
+    const margin = {top: 4, right: 9, bottom: 4, left: 2};
     const width = +this.dataOverview.nativeElement.getBoundingClientRect().width - margin.left - margin.right;
     const height = +this.dataOverview.nativeElement.getBoundingClientRect().height - margin.top - margin.bottom;
 
@@ -110,14 +127,16 @@ export class VizComponent implements OnInit {
     const x = d3.scaleLinear()
       .rangeRound([0, width])
       .domain([minLineStart, maxLineEnd]);
-    // console.log('xdom', minLineStart, maxLineEnd);
+     console.log('xdom', minLineStart, maxLineEnd, width);
+
 
     const y = d3.scaleLinear()
       .rangeRound([0, height])
-      .domain(d3.extent(textModel.map((l) => l.yPos))); // .nice();
+      .domain(this.yExtent); // .nice();
 
     const lineHeight = y(Math.min(...textModel.map((p, i, all) => (i > 0) ? p.yPos - all[i - 1].yPos : 100000 ))) - y(0);
-    const rectHeight = Math.min(Math.max(Math.ceil(lineHeight * 0.4), 1), 10);
+    const rectHeight = Math.min(Math.max(Math.ceil(lineHeight * 0.35), 1), 10);
+    const yOffset = Math.ceil(rectHeight / -2);
 
     // TODO use predefined colors
     const flatClasses = [].concat.apply([], textModel.map((d) => d.markup.map((m) => m.class)));
@@ -151,11 +170,50 @@ export class VizComponent implements OnInit {
             return x(d.end) - x(d.start);
           }
         })
-        .attr('y', Math.ceil(rectHeight / -2))
+        .attr('y', yOffset)
         .attr('height', rectHeight)
         .attr('title', (d) => d.text)
-        .attr('fill', (d) => z(d.class) );
+        .attr('fill', (d) => d.class === 'x-none' ? '#777' : z(d.class) );
 
+    this.brushScale = (d, i) => i === 0 ? y(d) + yOffset - 1 : y(d) - yOffset + 1;
+    const brush = d3.brushY()
+        .extent([[-1, yOffset - 1], [width + 1, height - yOffset + 1]])
+        .on('end', () => {
+          if (!d3.event.sourceEvent) { return; } // Only transition after input.
+          // console.log(d3.event);
+
+          const d0 = d3.event.selection.map(y.invert);
+          const d1 = d0.map(Math.round);
+          console.log('brushed lines ' + d1);
+
+          // correct extent and at edges
+          if (d1[1] > this.yExtent[1]) {
+            d1[0] = this.yExtent[1] - this.linesToShow + 1;
+          }
+          if (d1[0] < this.yExtent[0]) {
+            d1[0] = this.yExtent[0];
+          }
+          d1[1] = d1[0] + this.linesToShow - 1;
+          const y1 = d1.map(this.brushScale);
+          this.detailStart = d1[0];
+          this.renderDetail();
+          d3.select('g.brush').transition().call(d3.event.target.move, y1);
+        });
+
+    // g.append('g')
+    //   .attr('class', 'brush')
+    //   .call(brush);
+
+
+    const gBrush = g.append('g')
+        .attr('class', 'brush')
+        .call(brush)
+      .call(brush.move, [this.detailStart, this.linesToShow].map(this.brushScale));
+
+    // removes handle to resize the brush
+    d3.selectAll('.brush>.handle').remove();
+    // removes crosshair cursor
+    d3.selectAll('.brush>.overlay').remove();
   }
 
 
