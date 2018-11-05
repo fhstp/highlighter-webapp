@@ -16,6 +16,8 @@ export class DataStorageService {
   private _isComparsion: boolean;
   // The search terms of both
   private _searchTermsInput: Array<String>;
+  // The set colors and position of rule in stylesheet
+  private _currentRules: Map<String, Object>;
 
   // One input field -- #data1
   private dataStore = new BehaviorSubject<Aurum>(this.defaultData);
@@ -30,27 +32,6 @@ export class DataStorageService {
    */
   constructor() {
     this._isComparsion = false;
-  }
-
-  /**
-   * Getter method for the check if we are in comparsion mode or not.
-   */
-  get isComparsion(): boolean {
-    return this._isComparsion;
-  }
-
-  /**
-   * Setter method for the check if we are in comparsion mode or not.
-   */
-  set isComparison(value: boolean) {
-    this._isComparsion = value;
-  }
-
-  /**
-   * Getter method in order to retrieve all the search terms;
-   */
-  get searchTermsInput(): Array<String> {
-    return this._searchTermsInput;
   }
 
   /**
@@ -72,5 +53,40 @@ export class DataStorageService {
     }
 
     this._searchTermsInput = message.searchTerms;
+  }
+
+  /**
+ * Getter method for the check if we are in comparsion mode or not.
+ */
+  get isComparsion(): boolean {
+    return this._isComparsion;
+  }
+
+  /**
+   * Setter method for the check if we are in comparsion mode or not.
+   */
+  set isComparison(value: boolean) {
+    this._isComparsion = value;
+  }
+
+  /**
+   * Getter method in order to retrieve all the search terms;
+   */
+  get searchTermsInput(): Array<String> {
+    return this._searchTermsInput;
+  }
+
+  /**
+   * Getter method for retrieving the current set style rules
+   */
+  get currentStyles(): Map<String, Object> {
+    return this._currentRules;
+  }
+
+  /**
+   * Setter method for the current style rules
+   */
+  set currentStyles(currStyles: Map<String, Object>) {
+    this._currentRules = currStyles;
   }
 }

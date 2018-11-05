@@ -27,7 +27,9 @@ export class ColorGeneratorService {
       this.addRule(`.${crit.toLowerCase()}`,
         `background-color: rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`);
     });
-    console.log(this.currentRules);
+
+    // Store the rules we created globally
+    this.dataStorage.currentStyles = this.currentRules;
   }
 
   /**
@@ -50,7 +52,10 @@ export class ColorGeneratorService {
   private addRule(selector: string, rule: string) {
     const storeRule = this.styleSheet.insertRule(selector + '{' + rule + '}',
       this.currentRules.size);
-    this.currentRules.set(selector, storeRule);
+    this.currentRules.set(selector, {
+        'posStylesheet': storeRule,
+        'color': rule
+    });
   }
 
   /**
