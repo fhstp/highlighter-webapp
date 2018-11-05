@@ -8,7 +8,7 @@ export class DataStorageService {
   private defaultData = {
     searchTerms: ['Sample'],
     found_occurences: [{}],
-    markupString: ['Example Text'],
+    markupString: ['Example', 'Text', '\n'],
     link: 'www.example.com'
   };
 
