@@ -24,3 +24,7 @@
     height: 800px;
     background: white;
 }
+
+span {
+  border-radius: 3px;
+}

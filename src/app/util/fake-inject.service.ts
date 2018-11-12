@@ -13,7 +13,8 @@ export class FakeInjectService {
   startInjection() {
     // Read it for convenience as PROMISE
     this.dataLoading.readLocalDataP().then(data => {
-      console.log('FROM service | Promise read data');
+      console.log('%c FROM service | Promise read data',
+      'background: #222; color: lightcoral;');
 
       this.injectFakeData(data);
     });
@@ -34,7 +35,8 @@ export class FakeInjectService {
 
     // Perfrom the injection and trigger the event for one input filed only after 2 seconds.
     setTimeout(function () {
-      console.log('FROM service | injected the data into the input 1 field');
+      console.log('%c FROM service | injected the sample data into input 1 field',
+      'background: #222; color: lightcoral;');
       element.setAttribute('value', JSON.stringify(data));
       element.dispatchEvent(event);
     }, 2000);

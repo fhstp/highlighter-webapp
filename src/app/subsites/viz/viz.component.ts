@@ -46,7 +46,8 @@ export class VizComponent implements OnInit {
 
     // TODO: Add maybe take(1) as we only need the values once anc can unsubscribe later
     this.dataStorage.currentData.subscribe((data) => {
-      console.log('triggered first data storage... observable');
+      console.log('%c TRIGGERED | first data storage... observable',
+      'background: #222; color: aquamarine;');
 
       this.storedData = data;
 
@@ -56,7 +57,8 @@ export class VizComponent implements OnInit {
     // We need to subscribe only if its a comparison
     if (this.isComparison) {
       this.dataStorage.currentData2.subscribe((data) => {
-        console.log('triggered second data storage... observable');
+        console.log('%c TRIGGERED | second data storage... observable',
+        'background: #222; color: aquamarine;');
 
         this.storedData2 = data;
         this.renderSecondText(this.storedData2);
@@ -69,7 +71,8 @@ export class VizComponent implements OnInit {
    * @param data to show to the user
    */
   private renderText(data: Aurum) {
-    console.log('FROM component | Inside renderText() function (ONE INPUT).');
+    console.log('%c FROM component | Inside renderText() function (ONE INPUT).',
+    'background: #222; color: orange;');
 
     this.firstWebsiteName = data.link;
 
@@ -222,7 +225,8 @@ export class VizComponent implements OnInit {
    * @param data to show in the second input
    */
   private renderSecondText(data: Aurum) {
-    console.log('FROM component | Inside renderSecondText() function (TWO INPUTS)');
+    console.log('%c FROM component | Inside renderSecondText() function (TWO INPUTS)',
+    'background: #222; color: orange;');
 
     this.secondWebsiteName = data.link;
     const stringToPrint = data.markupString.join(' ');
