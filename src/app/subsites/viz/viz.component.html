@@ -11,7 +11,8 @@
   </div>
 
   <div class="row">
-    <div [className]="isComparison ? 'col-md-6' : 'col-md-12'">
+    <div [className]="isComparison ? 'col-md-6' : 'col-md-12' + ' contentParent'">
+      <svg #dataOverview id="dataOverview" class="textOverview"></svg>
       <div #dataContainer class="textContainer"></div>
     </div>
     <div [hidden]="!isComparison" class="col-md-6">
