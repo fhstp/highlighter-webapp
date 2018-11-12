@@ -13,3 +13,7 @@
     border: 1px solid #ced4da;
     border-radius: .25rem;
 }
+
+span {
+  border-radius: 3px;
+}

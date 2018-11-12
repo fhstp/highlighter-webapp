@@ -18,7 +18,8 @@ export class LandingComponent implements OnInit {
               private modalService: ModalService) { }
 
   ngOnInit() {
-    console.log('FROM component | Initizalized it...');
+    console.log('%c FROM component | Initizalized it...',
+    'background: #222; color: orange;');
   }
 
   /**

@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { DataStorageService } from './shared/data-storage.service';
 import { Router, Event, NavigationStart, NavigationEnd, NavigationCancel, NavigationError } from '@angular/router';
+import { ColorGeneratorService } from './shared/color-generator.service';
 
 @Component({
   selector: 'app-root',
@@ -10,29 +11,31 @@ import { Router, Event, NavigationStart, NavigationEnd, NavigationCancel, Naviga
 export class AppComponent {
   title = 'app';
   loading = false;
+  private isNotGenerated = true;
 
   constructor(private dataStorage: DataStorageService,
+    private colorGenerator: ColorGeneratorService,
     private router: Router) {
 
-      /**
-       * Check if we are changing the page by listening to the navigation start event.
-       * The boolean is used to determine if we are loading or not. We reset the boolean
-       * if we are at the end or cancel or error of a navigation.
-      */
-      this.router.events.subscribe((event: Event) => {
-        switch (true) {
-          case event instanceof NavigationStart:
-            this.loading = true;
-            break;
-          case event instanceof NavigationEnd:
-          case event instanceof NavigationCancel:
-          case event instanceof NavigationError:
-            this.loading = false;
-            break;
-          default:
-            break;
-        }
-      });
+    /**
+     * Check if we are changing the page by listening to the navigation start event.
+     * The boolean is used to determine if we are loading or not. We reset the boolean
+     * if we are at the end or cancel or error of a navigation.
+    */
+    this.router.events.subscribe((event: Event) => {
+      switch (true) {
+        case event instanceof NavigationStart:
+          this.loading = true;
+          break;
+        case event instanceof NavigationEnd:
+        case event instanceof NavigationCancel:
+        case event instanceof NavigationError:
+          this.loading = false;
+          break;
+        default:
+          break;
+      }
+    });
   }
 
   /**
@@ -43,9 +46,19 @@ export class AppComponent {
   onInputData(event: any) {
     const data = event.target.value;
     const idOfData = event.target.id;
-
-    console.log('READ from ', idOfData, ' input field with data: ', data);
+    // console.log('READ from ', idOfData, ' input field with data: ', data);
 
     this.dataStorage.changeData(JSON.parse(data), idOfData);
+    if (idOfData === 'data2') {
+      this.dataStorage.isComparison = true;
+    }
+
+    // Cheap trick to not use the color generator twice as the attributes are the same for both
+    if (this.isNotGenerated) {
+      this.colorGenerator.generateStyleRules();
+      this.isNotGenerated = false;
+    }
+
+    console.log(this.dataStorage.currentStyles);
   }
 }

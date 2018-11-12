@@ -14,12 +14,16 @@ export class DataStorageService {
 
   // Global variable that is used to see if we are in comparsion mode or not
   private _isComparsion: boolean;
+  // The search terms of both
+  private _searchTermsInput: Array<String>;
+  // The set colors and position of rule in stylesheet
+  private _currentRules: Map<String, Object>;
 
-  // One input field
+  // One input field -- #data1
   private dataStore = new BehaviorSubject<Aurum>(this.defaultData);
   public readonly currentData = this.dataStore.asObservable();
 
-  // The other input field
+  // The other input field -- #data2
   private dataStore2 = new BehaviorSubject<Aurum>(this.defaultData);
   public readonly currentData2 = this.dataStore2.asObservable();
 
@@ -28,13 +32,6 @@ export class DataStorageService {
    */
   constructor() {
     this._isComparsion = false;
-  }
-
-  /**
-   * Getter method for the check if we are in comparsion method or not.
-   */
-  get isComparsion(): boolean {
-    return this._isComparsion;
   }
 
   /**
@@ -49,11 +46,47 @@ export class DataStorageService {
         this.dataStore.next(message);
         break;
       case 'data2':
-        this._isComparsion = true;
         this.dataStore2.next(message);
         break;
       default:
         break;
     }
+
+    this._searchTermsInput = message.searchTerms;
+  }
+
+  /**
+ * Getter method for the check if we are in comparsion mode or not.
+ */
+  get isComparsion(): boolean {
+    return this._isComparsion;
+  }
+
+  /**
+   * Setter method for the check if we are in comparsion mode or not.
+   */
+  set isComparison(value: boolean) {
+    this._isComparsion = value;
+  }
+
+  /**
+   * Getter method in order to retrieve all the search terms;
+   */
+  get searchTermsInput(): Array<String> {
+    return this._searchTermsInput;
+  }
+
+  /**
+   * Getter method for retrieving the current set style rules
+   */
+  get currentStyles(): Map<String, Object> {
+    return this._currentRules;
+  }
+
+  /**
+   * Setter method for the current style rules
+   */
+  set currentStyles(currStyles: Map<String, Object>) {
+    this._currentRules = currStyles;
   }
 }
