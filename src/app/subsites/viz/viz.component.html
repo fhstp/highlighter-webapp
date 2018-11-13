@@ -1,4 +1,11 @@
-<div class="container">
+<div class="containerAlt">
+  <div class="row">
+    <div class="col-md-12 filterSection">
+      <p>Filter:</p>
+      <app-tagfilter></app-tagfilter>
+    </div>
+  </div>
+
   <div class="row">
     <div [className]="isComparison ? 'col-md-6' : 'col-md-12'">
       <h2>Data</h2>
@@ -11,7 +18,7 @@
   </div>
 
   <div class="row">
-    <div [className]="isComparison ? 'col-md-6' : 'col-md-12' + ' contentParent'">
+    <div [className]="isComparison ? 'col-md-6' + ' contentParent' : 'col-md-12' + ' contentParent'">
       <svg #dataOverview id="dataOverview" class="textOverview"></svg>
       <div #dataContainer class="textContainer"></div>
     </div>

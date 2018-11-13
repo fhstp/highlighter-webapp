@@ -1,3 +1,11 @@
+.containerAlt {
+  padding-left: 4%;
+  padding-right: 4%;
+  padding-top: 1%;
+  padding-bottom: 1%;
+  margin-right: auto;
+  margin-left: auto;
+}
 
 .contentParent {
     display: flex;
@@ -17,12 +25,20 @@
     background-clip: padding-box;
     border: 1px solid #ced4da;
     border-radius: .25rem;
+    overflow: hidden;
 }
 
 .textOverview {
-    width: 15%;
+    width: 25%;
     height: 800px;
     background: white;
+}
+
+.filterSection {
+  height: 150px;
+  border: 1px dashed lime;
+  margin: -20px 0 30px 0;
+  padding: 5px 25px 5px 25px;
 }
 
 span {
