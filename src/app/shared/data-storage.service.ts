@@ -12,12 +12,15 @@ export class DataStorageService {
     link: 'www.example.com'
   };
 
+  private defaultColor = new Map([['key1', 'value1'], ['key2', 'value2']]);
+
   // Global variable that is used to see if we are in comparsion mode or not
   private _isComparsion: boolean;
   // The search terms of both
   private _searchTermsInput: Array<String>;
   // The set colors and position of rule in stylesheet
-  private _currentRules: Map<String, Object>;
+  private _currentRules = new BehaviorSubject<Map<string, string>>(this.defaultColor);
+  public readonly currentRules = this._currentRules.asObservable();
 
   // One input field -- #data1
   private dataStore = new BehaviorSubject<Aurum>(this.defaultData);
@@ -55,6 +58,10 @@ export class DataStorageService {
     this._searchTermsInput = message.searchTerms;
   }
 
+  changeCurrentRules(rules: Map<string, string>) {
+    this._currentRules.next(rules);
+  }
+
   /**
  * Getter method for the check if we are in comparsion mode or not.
  */
@@ -74,19 +81,5 @@ export class DataStorageService {
    */
   get searchTermsInput(): Array<String> {
     return this._searchTermsInput;
-  }
-
-  /**
-   * Getter method for retrieving the current set style rules
-   */
-  get currentStyles(): Map<String, Object> {
-    return this._currentRules;
-  }
-
-  /**
-   * Setter method for the current style rules
-   */
-  set currentStyles(currStyles: Map<String, Object>) {
-    this._currentRules = currStyles;
   }
 }

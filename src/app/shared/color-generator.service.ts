@@ -29,7 +29,7 @@ export class ColorGeneratorService {
     });
 
     // Store the rules we created globally
-    this.dataStorage.currentStyles = this.currentRules;
+    this.dataStorage.changeCurrentRules(this.currentRules);
   }
 
   /**
@@ -52,10 +52,7 @@ export class ColorGeneratorService {
   private addRule(selector: string, rule: string) {
     const storeRule = this.styleSheet.insertRule(selector + '{' + rule + '}',
       this.currentRules.size);
-    this.currentRules.set(selector, {
-        'posStylesheet': storeRule,
-        'color': rule
-    });
+    this.currentRules.set(selector, rule);
   }
 
   /**

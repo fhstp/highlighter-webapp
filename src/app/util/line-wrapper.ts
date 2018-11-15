@@ -93,7 +93,7 @@ export class LineWrapper {
                 $div.html('M<br>M');
                 const twoline = ($div.node() as HTMLElement).getBoundingClientRect().height || 0;
                 line_height[font][size] = twoline - oneline;
-                console.log('h ' + twoline + ' ' + oneline);
+                // console.log('h ' + twoline + ' ' + oneline);
             });
         });
         $div.remove();

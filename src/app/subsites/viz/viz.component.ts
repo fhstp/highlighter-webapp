@@ -49,7 +49,6 @@ export class VizComponent implements OnInit {
       'background: #222; color: aquamarine;');
 
       this.storedData = data;
-
       this.renderText(this.storedData);
     });
 
@@ -96,11 +95,12 @@ export class VizComponent implements OnInit {
       - this.wrapper.getLineHeight() * 0.4;
     const possLinesToShow = Math.floor(detailHeight / this.wrapper.getLineHeight());
     this.linesToShow = Math.min(possLinesToShow, this.yExtent[1] - this.yExtent[0]);
-    console.log('extent: ' + detailHeight + ' / ' + this.wrapper.getLineHeight() + ' = ' + this.linesToShow);
+    // console.log('extent: ' + detailHeight + ' / ' + this.wrapper.getLineHeight() + ' = ' + this.linesToShow);
   }
 
   private renderDetail() {
-    console.log('FROM component | Inside renderDetail() function', this.detailStart, this.linesToShow);
+    console.log('%c FROM component | Inside renderDetail() function', 'background: #222; color: orange;');
+    console.log('Detail Start: ', this.detailStart, ' and Lines to Show: ', this.linesToShow);
 
     const stringToPrint = this.textModel
       .filter((d) => this.detailStart <= d.yPos && d.yPos <= (this.detailStart + this.linesToShow - 1))
@@ -110,7 +110,7 @@ export class VizComponent implements OnInit {
   }
 
   private renderOverview(textModel: Array<LineModel>) {
-    console.log('FROM component | Inside renderOverview() function');
+    console.log('%c FROM component | Inside renderOverview() function' , 'background: #222; color: orange;');
 
     // make sure we start clean
     this.dataOverview.nativeElement.innerHTML = '';
@@ -129,7 +129,7 @@ export class VizComponent implements OnInit {
     const x = d3.scaleLinear()
       .rangeRound([0, width])
       .domain([minLineStart, maxLineEnd]);
-     console.log('xdom', minLineStart, maxLineEnd, width);
+    //  console.log('xdom', minLineStart, maxLineEnd, width);
 
 
     const y = d3.scaleLinear()
@@ -186,7 +186,7 @@ export class VizComponent implements OnInit {
 
           const d0 = d3.event.selection.map(y.invert);
           const d1 = d0.map(Math.round);
-          console.log('brushed lines ' + d1);
+          // console.log('brushed lines ' + d1);
 
           // correct extent and at edges
           if (d1[1] > this.yExtent[1]) {
