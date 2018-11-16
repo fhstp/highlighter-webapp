@@ -80,7 +80,8 @@ export class VizComponent implements OnInit {
       this.wrapper = new LineWrapper();
       this.wrapper.initByElement(this.dataContainer.nativeElement);
     }
-    this.textModel = this.wrapper.wrapText(data.markupString, 600);
+    const textWidth = this.dataContainer.nativeElement.getBoundingClientRect().width - 22;
+    this.textModel = this.wrapper.wrapText(data.markupString, textWidth);
 
     this.calculateSpace();
     this.renderDetail();
@@ -185,9 +186,8 @@ export class VizComponent implements OnInit {
           if (!d3.event.sourceEvent) { return; } // Only transition after input.
           // console.log(d3.event);
 
-          const d0 = d3.event.selection.map(y.invert);
+          const d0 = d3.event.selection.map((d) => y.invert(d) - yOffset / 2);
           const d1 = d0.map(Math.round);
-          console.log('brushed lines ' + d1);
 
           // correct extent and at edges
           if (d1[1] > this.yExtent[1]) {
