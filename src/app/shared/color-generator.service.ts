@@ -26,6 +26,10 @@ export class ColorGeneratorService {
       const rgb = this.HSVtoRGB(startColor + (1 / this.nColors * i), 0.7, 1);
       this.addRule(`.${crit.toLowerCase()}`,
         `background-color: rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`);
+
+      // add CSS for overview rects
+      this.addRule(`.textOverview rect.${crit.toLowerCase()}`,
+        `fill: rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`);
     });
 
     // Store the rules we created globally

@@ -142,13 +142,6 @@ export class VizComponent implements OnInit {
     const rectHeight = Math.min(Math.max(Math.ceil(lineHeight * 0.35), 1), 10);
     const yOffset = Math.ceil(rectHeight / -2);
 
-    // TODO use predefined colors
-    const flatClasses = [].concat.apply([], textModel.map((d) => d.markup.map((m) => m.class)));
-
-    const z = d3.scaleOrdinal(d3.schemeCategory10)
-      // .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
-      .domain(flatClasses);
-
     /// indicator of unformated text
     // textModel.forEach((d) => { d.markup.forEach((m) => { if (m.start < 100) {console.log('Warning: ', m); } } ); } );
 
@@ -177,7 +170,8 @@ export class VizComponent implements OnInit {
         .attr('y', yOffset)
         .attr('height', rectHeight)
         .attr('title', (d) => d.text)
-        .attr('fill', (d) => d.class === 'x-none' ? '#777' : z(d.class) );
+        .attr('class', (d) => d.class);
+        // .attr('fill', (d) => d.class === 'x-none' ? '#777' : z(d.class) );
 
     this.brushScale = (d, i) => i === 0 ? y(d) + yOffset - 1 : y(d) - yOffset + 1;
     const brush = d3.brushY()
@@ -186,7 +180,8 @@ export class VizComponent implements OnInit {
           if (!d3.event.sourceEvent) { return; } // Only transition after input.
           // console.log(d3.event);
 
-          const d0 = d3.event.selection.map((d) => y.invert(d) - yOffset / 2);
+          const d0 = d3.event.selection.map((d) => y.invert(d - yOffset));
+          console.log(d0);
           const d1 = d0.map(Math.round);
 
           // correct extent and at edges

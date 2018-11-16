@@ -25,6 +25,10 @@
     background: white;
 }
 
+.textOverview rect.x-none {
+    fill: #777;
+}
+
 span {
   border-radius: 3px;
 }
