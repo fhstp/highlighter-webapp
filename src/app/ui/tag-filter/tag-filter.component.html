@@ -1,0 +1,6 @@
+<div class="tagWrapper">
+  <span *ngFor="let term of searchTerms; let i = index;" class='spanTags'
+    [style.background-color]="rulesClean[i]">{{ term }}
+      ({{ foundOcc[i].length > 1 ? foundOcc[i].length : 0}})</span>
+</div>
+

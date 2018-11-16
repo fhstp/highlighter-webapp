@@ -25,7 +25,8 @@ export class ColorGeneratorService {
     this.criteriasArray.forEach((crit, i) => {
       const rgb = this.HSVtoRGB(startColor + (1 / this.nColors * i), 0.7, 1);
       this.addRule(`.${crit.toLowerCase()}`,
-        `background-color: rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`);
+        `background-color: rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`,
+        `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`);
     });
 
     // Store the rules we created globally
@@ -45,14 +46,14 @@ export class ColorGeneratorService {
   /**
    * This method is used to add a style rule to our stylesheet and stores the reference
    * to the created rule. Example: addRule('p', 'color: black;');
-   * The rules are store in a map with their postion in the styleSheet as index.
+   * The colors are stored in a map with their postion in the styleSheet as index.
    * @param selector of the rule to add
    * @param rule we want to add as string
    */
-  private addRule(selector: string, rule: string) {
+  private addRule(selector: string, rule: string, color: string) {
     const storeRule = this.styleSheet.insertRule(selector + '{' + rule + '}',
       this.currentRules.size);
-    this.currentRules.set(selector, rule);
+    this.currentRules.set(selector, color);
   }
 
   /**
