@@ -91,7 +91,7 @@ export class VizComponent implements OnInit {
     const textModel = this.wrapper.wrapText(data.markupString, textWidth);
     const yExtent = d3.extent(textModel.map((l) => l.yPos));
     this.text1 = {lines: textModel, extent: yExtent, detailStart: yExtent[0]};
-    console.log(this.text1);
+    // console.log(this.text1);
 
     this.renderDetail(this.text1, this.dataContainer);
     this.renderOverview(this.text1, '#dataOverview', this.dataOverview, this.dataContainer);
@@ -103,11 +103,11 @@ export class VizComponent implements OnInit {
       // substract 40% of a line height
       - this.wrapper.getLineHeight() * 0.4;
     this.possibleLinesToShow = Math.floor(detailHeight / this.wrapper.getLineHeight());
-    console.log('linesToShow: ' + detailHeight + ' / ' + this.wrapper.getLineHeight() + ' = ' + this.possibleLinesToShow);
+    // console.log('linesToShow: ' + detailHeight + ' / ' + this.wrapper.getLineHeight() + ' = ' + this.possibleLinesToShow);
   }
 
   private renderDetail(text: TextModel, elem: ElementRef) {
-    console.log('FROM component | Inside renderDetail() function', text.detailStart, this.possibleLinesToShow);
+    console.log('%c FROM component | Inside renderDetail() function', 'background: #222; color: orange;');
 
     const stringToPrint = text.lines
       .filter((d) => text.detailStart <= d.yPos && d.yPos < (text.detailStart + this.possibleLinesToShow))
@@ -117,7 +117,7 @@ export class VizComponent implements OnInit {
   }
 
   private renderOverview(text: TextModel, overviewSelector: string, overviewElem: ElementRef, detailElem: ElementRef) {
-    console.log('FROM component | Inside renderOverview() function');
+    console.log('%c FROM component | Inside renderOverview() function', 'background: #222; color: orange;');
 
     // make sure we start clean
     overviewElem.nativeElement.innerHTML = '';
@@ -138,8 +138,7 @@ export class VizComponent implements OnInit {
     const x = d3.scaleLinear()
       .rangeRound([0, width])
       .domain([minLineStart, maxLineEnd]);
-     console.log('xdom', minLineStart, maxLineEnd, width);
-
+    //  console.log('xdom', minLineStart, maxLineEnd, width);
 
     const y = d3.scaleLinear()
       .rangeRound([0, height])
@@ -189,7 +188,7 @@ export class VizComponent implements OnInit {
           // console.log(d3.event);
 
           const d0 = d3.event.selection.map((d) => y.invert(d - yOffset));
-          console.log(d0);
+          // console.log(d0);
           const d1 = d0.map(Math.round);
 
           // correct extent and at edges
@@ -235,8 +234,8 @@ export class VizComponent implements OnInit {
     const yExtent = d3.extent(textModel.map((l) => l.yPos));
 
     this.text2 = {lines: textModel, extent: yExtent, detailStart: yExtent[0]};
-    console.log(this.text2);
-    console.log('hello re sec' + yExtent);
+    // console.log(this.text2);
+    // console.log('hello re sec' + yExtent);
 
     this.renderDetail(this.text2, this.dataContainer2);
     this.renderOverview(this.text2, '#dataOverview2', this.dataOverview2, this.dataContainer2);

@@ -10,6 +10,7 @@ export class ColorGeneratorService {
 
   private styleSheet;
   private currentRules = new Map();
+  private currentColors = new Map();
   private criteriasArray: Array<String>;
   private nColors: number;
 
@@ -25,7 +26,8 @@ export class ColorGeneratorService {
     this.criteriasArray.forEach((crit, i) => {
       const rgb = this.HSVtoRGB(startColor + (1 / this.nColors * i), 0.7, 1);
       this.addRule(`.${crit.toLowerCase()}`,
-        `background-color: rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`);
+        `background-color: rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`,
+        `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`);
 
       // add CSS for overview rects
       this.addRule(`.textOverview rect.${crit.toLowerCase()}`,
@@ -34,6 +36,11 @@ export class ColorGeneratorService {
 
     // Store the rules we created globally
     this.dataStorage.currentStyles = this.currentRules;
+
+    // Store the colors only if we have some
+    if (this.currentColors.size > 0) {
+      this.dataStorage.changeCurrentColors(this.currentColors);
+    }
   }
 
   /**
@@ -50,16 +57,21 @@ export class ColorGeneratorService {
    * This method is used to add a style rule to our stylesheet and stores the reference
    * to the created rule. Example: addRule('p', 'color: black;');
    * The rules are store in a map with their postion in the styleSheet as index.
+   * Furthermore the color is stored if given in a seperate map..
    * @param selector of the rule to add
    * @param rule we want to add as string
    */
-  private addRule(selector: string, rule: string) {
+  private addRule(selector: string, rule: string, color?: string) {
     const storeRule = this.styleSheet.insertRule(selector + '{' + rule + '}',
       this.currentRules.size);
     this.currentRules.set(selector, {
         'posStylesheet': storeRule,
         'color': rule
     });
+
+    if (color) {
+      this.currentColors.set(selector, color);
+    }
   }
 
   /**
