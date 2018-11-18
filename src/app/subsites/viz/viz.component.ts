@@ -25,10 +25,11 @@ export class VizComponent implements OnInit {
   private storedData2: Aurum;
 
   private text1: TextModel;
+  private text2: TextModel;
 
   private wrapper: LineWrapper;
 
-  private linesToShow = 10;
+  private possibleLinesToShow = 10;
 
   isComparison: boolean;
   firstWebsiteName: string;
@@ -37,6 +38,7 @@ export class VizComponent implements OnInit {
   @ViewChild('dataContainer') dataContainer: ElementRef;
   @ViewChild('dataContainer2') dataContainer2: ElementRef;
   @ViewChild('dataOverview') dataOverview: ElementRef;
+  @ViewChild('dataOverview2') dataOverview2: ElementRef;
 
   constructor(private dataStorage: DataStorageService) { }
 
@@ -84,39 +86,38 @@ export class VizComponent implements OnInit {
       this.wrapper = new LineWrapper();
       this.wrapper.initByElement(this.dataContainer.nativeElement);
     }
+    this.calculateDetailLinesToShow();
+
     const textWidth = this.dataContainer.nativeElement.getBoundingClientRect().width - 22;
     const textModel = this.wrapper.wrapText(data.markupString, textWidth);
     const yExtent = d3.extent(textModel.map((l) => l.yPos));
-
     this.text1 = {lines: textModel, extent: yExtent, detailStart: yExtent[0]};
     console.log(this.text1);
 
-    this.calculateSpace();
     this.renderDetail(this.text1, this.dataContainer);
-    this.renderOverview(this.text1, this.dataOverview, this.dataContainer);
+    this.renderOverview(this.text1, '#dataOverview', this.dataOverview, this.dataContainer);
   }
 
-  private calculateSpace() {
+  private calculateDetailLinesToShow() {
     // calculate detail extent based on heigth of detail comp & measured lineHeight
     const detailHeight = this.dataContainer.nativeElement.getBoundingClientRect().height
       // substract 40% of a line height
       - this.wrapper.getLineHeight() * 0.4;
-    const possLinesToShow = Math.floor(detailHeight / this.wrapper.getLineHeight());
-    this.linesToShow = Math.min(possLinesToShow, this.text1.extent[1] - this.text1.extent[0]);
-    console.log('linesToShow: ' + detailHeight + ' / ' + this.wrapper.getLineHeight() + ' = ' + this.linesToShow);
+    this.possibleLinesToShow = Math.floor(detailHeight / this.wrapper.getLineHeight());
+    console.log('linesToShow: ' + detailHeight + ' / ' + this.wrapper.getLineHeight() + ' = ' + this.possibleLinesToShow);
   }
 
   private renderDetail(text: TextModel, elem: ElementRef) {
-    console.log('FROM component | Inside renderDetail() function', text.detailStart, this.linesToShow);
+    console.log('FROM component | Inside renderDetail() function', text.detailStart, this.possibleLinesToShow);
 
     const stringToPrint = text.lines
-      .filter((d) => text.detailStart <= d.yPos && d.yPos < (text.detailStart + this.linesToShow))
+      .filter((d) => text.detailStart <= d.yPos && d.yPos < (text.detailStart + this.possibleLinesToShow))
       .map((d) => d.markedText)
       .join('\n');
     elem.nativeElement.innerHTML = stringToPrint;
   }
 
-  private renderOverview(text: TextModel, overviewElem: ElementRef, detailElem: ElementRef) {
+  private renderOverview(text: TextModel, overviewSelector: string, overviewElem: ElementRef, detailElem: ElementRef) {
     console.log('FROM component | Inside renderOverview() function');
 
     // make sure we start clean
@@ -125,6 +126,8 @@ export class VizComponent implements OnInit {
     const margin = {top: 4, right: 9, bottom: 4, left: 2};
     const width = +overviewElem.nativeElement.getBoundingClientRect().width - margin.left - margin.right;
     const height = +overviewElem.nativeElement.getBoundingClientRect().height - margin.top - margin.bottom;
+
+    const linesToShow = Math.min(this.possibleLinesToShow, text.extent[1] - text.extent[0]);
 
     const minLineStart = text.lines.reduce((p, c) => {
       return Math.min(p, c.markup.reduce((p2, c2) => Math.min(p2, c2.start), 1000000));
@@ -150,7 +153,7 @@ export class VizComponent implements OnInit {
     /// indicator of unformated text
     // textModel.forEach((d) => { d.markup.forEach((m) => { if (m.start < 100) {console.log('Warning: ', m); } } ); } );
 
-    const svg = d3.select('#dataOverview');
+    const svg = d3.select(overviewSelector);
     const g = svg.append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
     const linesG = g.selectAll('.line')
@@ -192,16 +195,16 @@ export class VizComponent implements OnInit {
 
           // correct extent and at edges
           if (d1[1] > text.extent[1]) {
-            d1[0] = text.extent[1] - this.linesToShow + 1;
+            d1[0] = text.extent[1] - linesToShow + 1;
           }
           if (d1[0] < text.extent[0]) {
             d1[0] = text.extent[0];
           }
-          d1[1] = d1[0] + this.linesToShow - 1;
+          d1[1] = d1[0] + linesToShow - 1;
           const y1 = d1.map(brushScale);
           text.detailStart = d1[0];
           this.renderDetail(text, detailElem);
-          d3.select('g.brush').transition().call(d3.event.target.move, y1);
+          d3.select(overviewSelector + ' g.brush').transition().call(d3.event.target.move, y1);
         });
 
     // g.append('g')
@@ -211,7 +214,7 @@ export class VizComponent implements OnInit {
     const gBrush = g.append('g')
         .attr('class', 'brush')
         .call(brush)
-        .call(brush.move, [text.detailStart, this.linesToShow].map(brushScale));
+        .call(brush.move, [text.detailStart, linesToShow].map(brushScale));
 
     // removes handle to resize the brush
     d3.selectAll('.brush>.handle').remove();
@@ -229,7 +232,16 @@ export class VizComponent implements OnInit {
     'background: #222; color: orange;');
 
     this.secondWebsiteName = data.link;
-    const stringToPrint = data.markupString.join(' ');
-    this.dataContainer2.nativeElement.innerHTML = stringToPrint;
+
+    const textWidth = this.dataContainer2.nativeElement.getBoundingClientRect().width - 22;
+    const textModel = this.wrapper.wrapText(data.markupString, textWidth);
+    const yExtent = d3.extent(textModel.map((l) => l.yPos));
+
+    this.text2 = {lines: textModel, extent: yExtent, detailStart: yExtent[0]};
+    console.log(this.text2);
+    console.log('hello re sec' + yExtent);
+
+    this.renderDetail(this.text2, this.dataContainer2);
+    this.renderOverview(this.text2, '#dataOverview2', this.dataOverview2, this.dataContainer2);
   }
 }
