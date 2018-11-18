@@ -58,7 +58,5 @@ export class AppComponent {
       this.colorGenerator.generateStyleRules();
       this.isNotGenerated = false;
     }
-
-    console.log(this.dataStorage.currentStyles);
   }
 }

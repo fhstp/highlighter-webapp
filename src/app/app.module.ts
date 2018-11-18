@@ -18,6 +18,7 @@ import { DataStorageService } from './shared/data-storage.service';
 import { ConfirmDialogComponent } from './util/modals/confirm-dialog/confirm-dialog.component';
 import { InputDialogComponent } from './util/modals/input-dialog/input-dialog.component';
 import { MessageDialogComponent } from './util/modals/message-dialog/message-dialog.component';
+import { TagFilterComponent } from './ui/tag-filter/tag-filter.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import { MessageDialogComponent } from './util/modals/message-dialog/message-dia
     VizComponent,
     ConfirmDialogComponent,
     InputDialogComponent,
-    MessageDialogComponent
+    MessageDialogComponent,
+    TagFilterComponent
   ],
   imports: [
     BrowserModule,

@@ -1,4 +1,12 @@
-<div class="container">
+<div class="containerAlt">
+  <div class="row">
+    <div class="col-md-12 filterSection">
+      <h5>Gesuchte Kriterien:</h5>
+      <p><small>In Klammer, die Anzahl der gefundenen Kriterien im Text / den Texten</small></p>
+      <app-tag-filter></app-tag-filter>
+    </div>
+  </div>
+
   <div class="row">
     <div [className]="isComparison ? 'col-md-6' : 'col-md-12'">
       <span>Origin: <strong>{{ firstWebsiteName }}</strong></span>
@@ -9,11 +17,11 @@
   </div>
 
   <div class="row">
-    <div [className]="isComparison ? 'col-md-6' : 'col-md-12' + ' contentParent'">
+    <div [className]="isComparison ? 'col-md-6' + ' contentParent' : 'col-md-12' + ' contentParent'">
       <svg #dataOverview id="dataOverview" class="textOverview"></svg>
       <div #dataContainer class="textContainer"></div>
     </div>
-    <div [hidden]="!isComparison" class="col-md-6">
+    <div [hidden]="!isComparison" class="col-md-6 contentParent">
       <div #dataContainer2 class="textContainer"></div>
       <svg #dataOverview2 id="dataOverview2" class="textOverview"></svg>
     </div>

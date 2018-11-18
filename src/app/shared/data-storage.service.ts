@@ -8,9 +8,11 @@ export class DataStorageService {
   private defaultData = {
     searchTerms: ['Sample'],
     found_occurences: [{}],
-    markupString: ['Example', 'Text', '\n'],
+    markupString: ['Example', 'Text', '\n', 'With', 'some', 'sample', 'Text.'],
     link: 'www.example.com'
   };
+
+  private defaultColor = new Map([['sample', 'rgb(200, 74, 12)'], ['test', 'rgb(220, 82, 110)']]);
 
   // Global variable that is used to see if we are in comparsion mode or not
   private _isComparsion: boolean;
@@ -18,6 +20,9 @@ export class DataStorageService {
   private _searchTermsInput: Array<String>;
   // The set colors and position of rule in stylesheet
   private _currentRules: Map<String, Object>;
+  // The current colors as Observable as we need it at creation time
+  private _currentColors = new BehaviorSubject<Map<string, string>>(this.defaultColor);
+  public readonly currentColors = this._currentColors.asObservable();
 
   // One input field -- #data1
   private dataStore = new BehaviorSubject<Aurum>(this.defaultData);
@@ -53,6 +58,15 @@ export class DataStorageService {
     }
 
     this._searchTermsInput = message.searchTerms;
+  }
+
+  /**
+   * This method is used in order to add new colors to the observable stream. We need
+   * this as observable stream as we are using the colors at the creation time already.
+   * @param color is a map with the tag as key and it's color as value
+   */
+  changeCurrentColors(color: Map<string, string>) {
+    this._currentColors.next(color);
   }
 
   /**
