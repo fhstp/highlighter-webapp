@@ -3,7 +3,6 @@ import * as d3 from 'd3';
 import { Aurum } from '../../shared/aurum.model';
 import { DataStorageService } from '../../shared/data-storage.service';
 import { LineModel, Markup } from '../../shared/line.model';
-import { domRendererFactory3 } from '@angular/core/src/render3/interfaces/renderer';
 import { LineWrapper } from 'src/app/util/line-wrapper';
 import { isNullOrUndefined } from 'util';
 

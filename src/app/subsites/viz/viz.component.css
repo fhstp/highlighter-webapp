@@ -1,11 +1,19 @@
-
 .contentParent {
     display: flex;
 }
 
+.containerAlt {
+    padding-left: 4%;
+    padding-right: 4%;
+    padding-top: 1%;
+    padding-bottom: 1%;
+    margin-right: auto;
+    margin-left: auto;
+}
+
 .textContainer {
     width: 75%;
-    height: 620px;
+    height: 720px;
     word-break: keep-all;
     white-space: pre-wrap;
     margin-bottom: 8%;
@@ -21,7 +29,7 @@
 
 .textOverview {
     width: 15%;
-    height: 620px;
+    height: 720px;
     background: white;
 }
 
@@ -29,6 +37,15 @@
     fill: #777;
 }
 
+.filterSection {
+    min-height: 140px;
+    height: 100%;
+    border: 1px dashed lime;
+    margin: -20px 0 30px 0;
+    padding: 5px 25px 5px 25px;
+    overflow: auto;
+}
+
 span {
-  border-radius: 3px;
+    border-radius: 3px;
 }
