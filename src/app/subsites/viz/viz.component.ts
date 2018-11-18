@@ -7,6 +7,12 @@ import { domRendererFactory3 } from '@angular/core/src/render3/interfaces/render
 import { LineWrapper } from 'src/app/util/line-wrapper';
 import { isNullOrUndefined } from 'util';
 
+interface TextModel {
+  lines: Array<LineModel>;
+  extent: [undefined, undefined] | [number, number];
+  detailStart: number;
+}
+
 @Component({
   selector: 'app-viz',
   templateUrl: './viz.component.html',
@@ -18,13 +24,11 @@ export class VizComponent implements OnInit {
   private storedData: Aurum;
   private storedData2: Aurum;
 
-  private textModel: Array<LineModel>;
+  private text1: TextModel;
+
   private wrapper: LineWrapper;
 
-  private yExtent: [undefined, undefined] | [number, number];
-  private detailStart = 1;
   private linesToShow = 10;
-  private brushScale;
 
   isComparison: boolean;
   firstWebsiteName: string;
@@ -81,50 +85,51 @@ export class VizComponent implements OnInit {
       this.wrapper.initByElement(this.dataContainer.nativeElement);
     }
     const textWidth = this.dataContainer.nativeElement.getBoundingClientRect().width - 22;
-    this.textModel = this.wrapper.wrapText(data.markupString, textWidth);
+    const textModel = this.wrapper.wrapText(data.markupString, textWidth);
+    const yExtent = d3.extent(textModel.map((l) => l.yPos));
+
+    this.text1 = {lines: textModel, extent: yExtent, detailStart: yExtent[0]};
+    console.log(this.text1);
 
     this.calculateSpace();
-    this.renderDetail();
-    this.renderOverview(this.textModel);
+    this.renderDetail(this.text1, this.dataContainer);
+    this.renderOverview(this.text1, this.dataOverview, this.dataContainer);
   }
 
   private calculateSpace() {
-    this.yExtent = d3.extent(this.textModel.map((l) => l.yPos));
-    this.detailStart = this.yExtent[0];
-
     // calculate detail extent based on heigth of detail comp & measured lineHeight
     const detailHeight = this.dataContainer.nativeElement.getBoundingClientRect().height
       // substract 40% of a line height
       - this.wrapper.getLineHeight() * 0.4;
     const possLinesToShow = Math.floor(detailHeight / this.wrapper.getLineHeight());
-    this.linesToShow = Math.min(possLinesToShow, this.yExtent[1] - this.yExtent[0]);
-    console.log('extent: ' + detailHeight + ' / ' + this.wrapper.getLineHeight() + ' = ' + this.linesToShow);
+    this.linesToShow = Math.min(possLinesToShow, this.text1.extent[1] - this.text1.extent[0]);
+    console.log('linesToShow: ' + detailHeight + ' / ' + this.wrapper.getLineHeight() + ' = ' + this.linesToShow);
   }
 
-  private renderDetail() {
-    console.log('FROM component | Inside renderDetail() function', this.detailStart, this.linesToShow);
+  private renderDetail(text: TextModel, elem: ElementRef) {
+    console.log('FROM component | Inside renderDetail() function', text.detailStart, this.linesToShow);
 
-    const stringToPrint = this.textModel
-      .filter((d) => this.detailStart <= d.yPos && d.yPos <= (this.detailStart + this.linesToShow - 1))
+    const stringToPrint = text.lines
+      .filter((d) => text.detailStart <= d.yPos && d.yPos < (text.detailStart + this.linesToShow))
       .map((d) => d.markedText)
       .join('\n');
-    this.dataContainer.nativeElement.innerHTML = stringToPrint;
+    elem.nativeElement.innerHTML = stringToPrint;
   }
 
-  private renderOverview(textModel: Array<LineModel>) {
+  private renderOverview(text: TextModel, overviewElem: ElementRef, detailElem: ElementRef) {
     console.log('FROM component | Inside renderOverview() function');
 
     // make sure we start clean
-    this.dataOverview.nativeElement.innerHTML = '';
+    overviewElem.nativeElement.innerHTML = '';
 
     const margin = {top: 4, right: 9, bottom: 4, left: 2};
-    const width = +this.dataOverview.nativeElement.getBoundingClientRect().width - margin.left - margin.right;
-    const height = +this.dataOverview.nativeElement.getBoundingClientRect().height - margin.top - margin.bottom;
+    const width = +overviewElem.nativeElement.getBoundingClientRect().width - margin.left - margin.right;
+    const height = +overviewElem.nativeElement.getBoundingClientRect().height - margin.top - margin.bottom;
 
-    const minLineStart = textModel.reduce((p, c) => {
+    const minLineStart = text.lines.reduce((p, c) => {
       return Math.min(p, c.markup.reduce((p2, c2) => Math.min(p2, c2.start), 1000000));
       }, 1000000);
-    const maxLineEnd = textModel.reduce((p, c) => {
+    const maxLineEnd = text.lines.reduce((p, c) => {
       return Math.max(p, c.markup.reduce((p2, c2) => Math.max(p2, c2.end), 0));
       }, 0);
 
@@ -136,9 +141,9 @@ export class VizComponent implements OnInit {
 
     const y = d3.scaleLinear()
       .rangeRound([0, height])
-      .domain(this.yExtent); // .nice();
+      .domain(text.extent); // .nice();
 
-    const lineHeight = y(Math.min(...textModel.map((p, i, all) => (i > 0) ? p.yPos - all[i - 1].yPos : 100000 ))) - y(0);
+    const lineHeight = y(Math.min(...text.lines.map((p, i, all) => (i > 0) ? p.yPos - all[i - 1].yPos : 100000 ))) - y(0);
     const rectHeight = Math.min(Math.max(Math.ceil(lineHeight * 0.35), 1), 10);
     const yOffset = Math.ceil(rectHeight / -2);
 
@@ -149,7 +154,7 @@ export class VizComponent implements OnInit {
     const g = svg.append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
     const linesG = g.selectAll('.line')
-      .data(textModel)
+      .data(text.lines)
       .enter().append('g')
       .classed('line', true)
       .attr('transform', (d) => 'translate(0,' + y(d.yPos) + ')')
@@ -173,7 +178,8 @@ export class VizComponent implements OnInit {
         .attr('class', (d) => d.class);
         // .attr('fill', (d) => d.class === 'x-none' ? '#777' : z(d.class) );
 
-    this.brushScale = (d, i) => i === 0 ? y(d) + yOffset - 1 : y(d) - yOffset + 1;
+    const brushScale = (d, i) => i === 0 ? y(d) + yOffset - 1 : y(d) - yOffset + 1;
+
     const brush = d3.brushY()
         .extent([[-1, yOffset - 1], [width + 1, height - yOffset + 1]])
         .on('end', () => {
@@ -185,16 +191,16 @@ export class VizComponent implements OnInit {
           const d1 = d0.map(Math.round);
 
           // correct extent and at edges
-          if (d1[1] > this.yExtent[1]) {
-            d1[0] = this.yExtent[1] - this.linesToShow + 1;
+          if (d1[1] > text.extent[1]) {
+            d1[0] = text.extent[1] - this.linesToShow + 1;
           }
-          if (d1[0] < this.yExtent[0]) {
-            d1[0] = this.yExtent[0];
+          if (d1[0] < text.extent[0]) {
+            d1[0] = text.extent[0];
           }
           d1[1] = d1[0] + this.linesToShow - 1;
-          const y1 = d1.map(this.brushScale);
-          this.detailStart = d1[0];
-          this.renderDetail();
+          const y1 = d1.map(brushScale);
+          text.detailStart = d1[0];
+          this.renderDetail(text, detailElem);
           d3.select('g.brush').transition().call(d3.event.target.move, y1);
         });
 
@@ -202,11 +208,10 @@ export class VizComponent implements OnInit {
     //   .attr('class', 'brush')
     //   .call(brush);
 
-
     const gBrush = g.append('g')
         .attr('class', 'brush')
         .call(brush)
-      .call(brush.move, [this.detailStart, this.linesToShow].map(this.brushScale));
+        .call(brush.move, [text.detailStart, this.linesToShow].map(brushScale));
 
     // removes handle to resize the brush
     d3.selectAll('.brush>.handle').remove();
