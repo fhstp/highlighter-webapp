@@ -13,9 +13,12 @@ export class DataStorageService {
   };
 
   private defaultColor = new Map([['sample', 'rgb(200, 74, 12)'], ['test', 'rgb(220, 82, 110)']]);
+  private defaultComparison = false;
 
   // Global variable that is used to see if we are in comparsion mode or not
-  private _isComparsion: boolean;
+  private _isComparsion = new BehaviorSubject<boolean>(this.defaultComparison);
+  public readonly isComparison = this._isComparsion.asObservable();
+
   // The search terms of both
   private _searchTermsInput: Array<String>;
   // The set colors and position of rule in stylesheet
@@ -36,7 +39,6 @@ export class DataStorageService {
    * Just initialize some stuff.
    */
   constructor() {
-    this._isComparsion = false;
   }
 
   /**
@@ -69,19 +71,22 @@ export class DataStorageService {
     this._currentColors.next(color);
   }
 
-  /**
- * Getter method for the check if we are in comparsion mode or not.
- */
-  get isComparsion(): boolean {
-    return this._isComparsion;
+  changeIsComparison(state: boolean) {
+    this._isComparsion.next(state);
   }
+//   /**
+//  * Getter method for the check if we are in comparsion mode or not.
+//  */
+//   get isComparsion(): boolean {
+//     return this._isComparsion;
+//   }
 
-  /**
-   * Setter method for the check if we are in comparsion mode or not.
-   */
-  set isComparison(value: boolean) {
-    this._isComparsion = value;
-  }
+//   /**
+//    * Setter method for the check if we are in comparsion mode or not.
+//    */
+//   set isComparison(value: boolean) {
+//     this._isComparsion = value;
+//   }
 
   /**
    * Getter method in order to retrieve all the search terms;

@@ -14,11 +14,16 @@ export class ColorGeneratorService {
   private criteriasArray: Array<String>;
   private nColors: number;
 
-  generateStyleRules() {
+  generateStyleRules(searchTerms?: Array<string>) {
     // Cretae the empty stylesheet
     this.createStylesheet();
     // Get the criterias now
-    this.criteriasArray = this.dataStorage.searchTermsInput;
+    if (searchTerms) {
+      this.criteriasArray = searchTerms;
+    } else {
+      this.criteriasArray = this.dataStorage.searchTermsInput;
+    }
+
     this.nColors = this.criteriasArray.length;
 
     // Generate the random colors next and the styles for each

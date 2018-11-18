@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { DataStorageService } from './shared/data-storage.service';
 import { Router, Event, NavigationStart, NavigationEnd, NavigationCancel, NavigationError } from '@angular/router';
 import { ColorGeneratorService } from './shared/color-generator.service';
+import { Aurum } from './shared/aurum.model';
 
 @Component({
   selector: 'app-root',
@@ -46,17 +47,21 @@ export class AppComponent {
   onInputData(event: any) {
     const data = event.target.value;
     const idOfData = event.target.id;
-    // console.log('READ from ', idOfData, ' input field with data: ', data);
+    const dataParsed: Aurum = JSON.parse(data);
 
-    this.dataStorage.changeData(JSON.parse(data), idOfData);
-    if (idOfData === 'data2') {
-      this.dataStorage.isComparison = true;
+    if (idOfData === 'data1') {
+      this.dataStorage.changeData(JSON.parse(data), idOfData);
     }
 
     // Cheap trick to not use the color generator twice as the attributes are the same for both
     if (this.isNotGenerated) {
-      this.colorGenerator.generateStyleRules();
+      this.colorGenerator.generateStyleRules(dataParsed.searchTerms);
       this.isNotGenerated = false;
+    }
+
+    if (idOfData === 'data2') {
+      this.dataStorage.changeIsComparison(true);
+      this.dataStorage.changeData(JSON.parse(data), idOfData);
     }
   }
 }

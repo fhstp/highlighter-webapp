@@ -47,7 +47,9 @@ export class VizComponent implements OnInit {
    */
   ngOnInit() {
     // Check if we are in comparison mode or not
-    this.isComparison = this.dataStorage.isComparsion;
+    this.dataStorage.isComparison.subscribe((val) => {
+      this.isComparison = val;
+    });
 
     // TODO: Add maybe take(1) as we only need the values once anc can unsubscribe later
     this.dataStorage.currentData.subscribe((data) => {
