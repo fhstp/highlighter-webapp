@@ -17,6 +17,10 @@ export class TagFilterComponent implements OnInit {
 
   rulesClean: string[];
 
+  // For the tag filter stuff now
+  itemsList = [];
+  itemsSelectedList = [];
+
   constructor(private dataStorage: DataStorageService) { }
 
   ngOnInit() {
@@ -47,6 +51,18 @@ export class TagFilterComponent implements OnInit {
       return rule;
     });
 
-    console.log(this.foundOcc);
+    this.itemsList = this.searchTerms.map((e, i) => {
+      return {
+        id: i,
+        name: e,
+        color: this.rulesClean[i]
+      };
+    });
+
+    this.itemsSelectedList = this.searchTerms;
+  }
+
+  clearItem(item: any) {
+    this.itemsSelectedList.splice(item.id, 1);
   }
 }

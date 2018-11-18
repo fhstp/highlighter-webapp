@@ -1,6 +1,25 @@
-<div class="tagWrapper">
+<!-- <div class="tagWrapper">
   <span *ngFor="let term of searchTerms; let i = index;" class='spanTags'
     [style.background-color]="rulesClean[i]">{{ term }}
       ({{ foundOcc[i].length > 1 ? foundOcc[i].length : 0}})</span>
-</div>
+</div> -->
 
+<ng-select
+    [items]="itemsList"
+    [multiple]="true"
+    bindLabel="name"
+    bindValue="name"
+    placeholder="Select items"
+    [(ngModel)]="itemsSelectedList">
+
+    <ng-template ng-option-tmp let-item="item" let-index="index">
+        <span class="ng-value-label" [style.background-color]="rulesClean[index]">{{ item.name }}</span>
+    </ng-template>
+
+    <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
+        <div class="ng-value" *ngFor="let item of itemsList; let i = index;">
+            <span class="ng-value-label" [style.background-color]="rulesClean[i]">{{ item.name }}</span>
+            <span class="ng-value-icon right" (click)="clearItem(item)" aria-hidden="true">×</span>
+        </div>
+    </ng-template>
+</ng-select>
