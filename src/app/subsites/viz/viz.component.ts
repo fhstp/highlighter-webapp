@@ -218,8 +218,6 @@ export class VizComponent implements OnInit {
 
     // removes handle to resize the brush
     d3.selectAll('.brush>.handle').remove();
-    // removes crosshair cursor
-    d3.selectAll('.brush>.overlay').remove();
   }
 
 
