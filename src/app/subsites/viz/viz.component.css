@@ -5,7 +5,7 @@
 
 .textContainer {
     width: 75%;
-    height: 800px;
+    height: 620px;
     word-break: keep-all;
     white-space: pre-wrap;
     margin-bottom: 8%;
@@ -21,8 +21,12 @@
 
 .textOverview {
     width: 15%;
-    height: 800px;
+    height: 620px;
     background: white;
+}
+
+.textOverview rect.x-none {
+    fill: #777;
 }
 
 span {

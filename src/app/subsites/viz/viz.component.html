@@ -1,11 +1,9 @@
 <div class="container">
   <div class="row">
     <div [className]="isComparison ? 'col-md-6' : 'col-md-12'">
-      <h2>Data</h2>
       <span>Origin: <strong>{{ firstWebsiteName }}</strong></span>
     </div>
     <div [hidden]="!isComparison" class="col-md-6">
-      <h2>Data 2</h2>
       <span>Origin: <strong>{{ secondWebsiteName }}</strong></span>
     </div>
   </div>
@@ -17,6 +15,7 @@
     </div>
     <div [hidden]="!isComparison" class="col-md-6">
       <div #dataContainer2 class="textContainer"></div>
+      <svg #dataOverview2 id="dataOverview2" class="textOverview"></svg>
     </div>
   </div>
 </div>
