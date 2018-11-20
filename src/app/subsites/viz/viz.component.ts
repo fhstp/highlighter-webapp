@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, ViewEncapsulation, OnDestroy } from '@angular/core';
 import * as d3 from 'd3';
 import { Aurum } from '../../shared/aurum.model';
 import { DataStorageService } from '../../shared/data-storage.service';
@@ -18,7 +18,7 @@ interface TextModel {
   styleUrls: ['./viz.component.css'],
   encapsulation: ViewEncapsulation.None
 })
-export class VizComponent implements OnInit {
+export class VizComponent implements OnInit, OnDestroy {
 
   private storedData: Aurum;
   private storedData2: Aurum;
@@ -39,6 +39,9 @@ export class VizComponent implements OnInit {
   @ViewChild('dataOverview') dataOverview: ElementRef;
   @ViewChild('dataOverview2') dataOverview2: ElementRef;
 
+  private subscription1;
+  private subscription2;
+
   constructor(private dataStorage: DataStorageService) { }
 
   /**
@@ -48,11 +51,18 @@ export class VizComponent implements OnInit {
   ngOnInit() {
     // Check if we are in comparison mode or not
     this.dataStorage.isComparison.subscribe((val) => {
+      console.log('%c TRIGGERED | isComparison ' + val + ' ... observable',
+      'background: #222; color: hotpink;');
       this.isComparison = val;
+
+      if (this.isComparison) {
+        d3.select('#data1Pane').classed('col-md-12', false).classed('col-md-6', true);
+        d3.select('#data2Pane').style('display', 'flex');
+      }
     });
 
     // TODO: Add maybe take(1) as we only need the values once anc can unsubscribe later
-    this.dataStorage.currentData.subscribe((data) => {
+    this.subscription1 = this.dataStorage.currentData.subscribe((data) => {
       console.log('%c TRIGGERED | first data storage... observable',
       'background: #222; color: aquamarine;');
 
@@ -62,15 +72,22 @@ export class VizComponent implements OnInit {
     });
 
     // We need to subscribe only if its a comparison
-    if (this.isComparison) {
-      this.dataStorage.currentData2.subscribe((data) => {
+    // if (this.isComparison) {
+      this.subscription2 = this.dataStorage.currentData2.subscribe((data) => {
         console.log('%c TRIGGERED | second data storage... observable',
         'background: #222; color: aquamarine;');
 
         this.storedData2 = data;
+        console.log(data);
         this.renderSecondText(this.storedData2);
+
+        // render the first again because the div width changed
+        if (this.storedData !== undefined) {
+          this.renderText(this.storedData);
+          // console.log('a');
+        }
       });
-    }
+    // }
   }
 
   /**
@@ -90,6 +107,7 @@ export class VizComponent implements OnInit {
     this.calculateDetailLinesToShow();
 
     const textWidth = this.dataContainer.nativeElement.getBoundingClientRect().width - 22;
+    console.log('textwidth: ' + textWidth);
     const textModel = this.wrapper.wrapText(data.markupString, textWidth);
     const yExtent = d3.extent(textModel.map((l) => l.yPos));
     this.text1 = {lines: textModel, extent: yExtent, detailStart: yExtent[0]};
@@ -231,7 +249,10 @@ export class VizComponent implements OnInit {
 
     this.secondWebsiteName = data.link;
 
+    // const textWidth = 400;
     const textWidth = this.dataContainer2.nativeElement.getBoundingClientRect().width - 22;
+    console.log('textwidth: ' + textWidth);
+    // console.log('markup before: ' + data.markupString);
     const textModel = this.wrapper.wrapText(data.markupString, textWidth);
     const yExtent = d3.extent(textModel.map((l) => l.yPos));
 
@@ -241,5 +262,12 @@ export class VizComponent implements OnInit {
 
     this.renderDetail(this.text2, this.dataContainer2);
     this.renderOverview(this.text2, '#dataOverview2', this.dataOverview2, this.dataContainer2);
+  }
+
+  ngOnDestroy() {
+    this.subscription1.unsubscribe();
+    if (this.subscription2 !== undefined) {
+      this.subscription2.unsubscribe();
+    }
   }
 }

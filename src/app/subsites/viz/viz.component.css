@@ -2,6 +2,10 @@
     display: flex;
 }
 
+#data2Pane {
+    display: none;
+}
+
 .containerAlt {
     padding-left: 4%;
     padding-right: 4%;
