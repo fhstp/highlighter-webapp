@@ -127,11 +127,13 @@ export class LineWrapper {
                 markedText = '';
                 cTokens = [];
                 lineWidth = 0;
+            } else if (token.trim() === '') {
+                // skip
             } else {
                 const next = new Markup();
                 if (token.startsWith('<span')) {
-                    next.class = token.replace(/<span class=(?:\"|\')([a-z]*)(?:\"|\')>.*/, '$1');
-                    next.text = token.replace(/<span class=(?:\"|\')[a-z]*(?:\"|\')>(.*)<\/span>/, '$1');
+                    next.class = token.replace(/<span class=(?:\"|\')([a-zäöüß]*)(?:\"|\')>.*/, '$1');
+                    next.text = token.replace(/<span class=(?:\"|\')[a-zäöüß]*(?:\"|\')>(.*)<\/span>/, '$1');
                     // console.log(token + ' -> ' + next.text);
                 } else {
                     next.class = 'x-none';
