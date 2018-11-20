@@ -260,6 +260,24 @@ export class VizComponent implements OnInit, OnDestroy {
 
     // removes handle to resize the brush
     d3.selectAll('.brush>.handle').remove();
+
+    // enable scrolling
+    detailElem.nativeElement.addEventListener('wheel', event => {
+      const delta = Math.sign(event.wheelDelta);
+      text.detailStart -= delta;
+
+      // correct extent and at edges
+      if (text.detailStart < text.extent[0]) {
+        text.detailStart = text.extent[0];
+      }
+      if (text.detailStart + linesToShow - 1 > text.extent[1]) {
+        text.detailStart = text.extent[1] - linesToShow + 1;
+      }
+
+      // update brush & detail view
+      gBrush.call(brush.move, [text.detailStart, text.detailStart + linesToShow - 1].map(brushScale));
+      this.renderDetail(text, detailElem);
+    });
   }
 
 
