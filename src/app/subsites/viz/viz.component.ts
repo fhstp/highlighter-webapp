@@ -108,7 +108,6 @@ export class VizComponent implements OnInit, OnDestroy {
     this.setWidthAndVisibility();
 
     const textWidth = this.widthDetail - 22;
-    console.log('textwidth: ' + textWidth);
     const textModel = this.wrapper.wrapText(data.markupString, textWidth);
     const yExtent = d3.extent(textModel.map((l) => l.yPos));
     this.text1 = {lines: textModel, extent: yExtent, detailStart: yExtent[0]};
@@ -120,20 +119,20 @@ export class VizComponent implements OnInit, OnDestroy {
 
   private setWidthAndVisibility() {
     const availWidth = (d3.select('#data1Pane').node() as any).getBoundingClientRect().width;
-    console.log('data1Pane width ' + availWidth);
 
-    if ( this.isComparison) {
-        // d3.select('#data1Pane').classed('col-md-12', false).classed('col-md-6', true);
-        d3.select('#dataOverview2').style('display', 'block');
-        d3.select('#dataDetail2').style('display', 'block');
+    if (this.isComparison) {
+      d3.select('#comparisonContainer').style('display', 'block');
+      d3.select('#dataOverview2').style('display', 'block');
+      d3.select('#dataDetail2').style('display', 'block');
 
-      this.widthOverview = availWidth * 0.1;
-      this.widthDetail = availWidth * 0.3;
+      this.widthOverview = availWidth * 0.11;
+      this.widthDetail = availWidth * 0.35;
     } else {
+      d3.select('#comparisonContainer').style('display', 'none');
       d3.select('#dataOverview2').style('display', 'none');
       d3.select('#dataDetail2').style('display', 'none');
 
-    this.widthOverview = availWidth * 0.2;
+      this.widthOverview = availWidth * 0.2;
       this.widthDetail = availWidth * 0.7;
     }
 
