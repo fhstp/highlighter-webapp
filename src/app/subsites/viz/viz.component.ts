@@ -170,7 +170,7 @@ export class VizComponent implements OnInit, OnDestroy {
     const width = +this.widthOverview - margin.left - margin.right;
     const height = +overviewElem.nativeElement.getBoundingClientRect().height - margin.top - margin.bottom;
 
-    const linesToShow = Math.min(this.possibleLinesToShow, text.extent[1] - text.extent[0]);
+    const linesToShow = Math.min(this.possibleLinesToShow, text.extent[1] - text.extent[0] + 1);
 
     const minLineStart = text.lines.reduce((p, c) => {
       return Math.min(p, c.markup.reduce((p2, c2) => Math.min(p2, c2.start), 1000000));
