@@ -29,6 +29,8 @@ export class VizComponent implements OnInit, OnDestroy {
   private wrapper: LineWrapper;
 
   private possibleLinesToShow = 10;
+  private widthDetail = 400;
+  private widthOverview = 100;
 
   isComparison: boolean;
   firstWebsiteName: string;
@@ -56,8 +58,6 @@ export class VizComponent implements OnInit, OnDestroy {
       this.isComparison = val;
 
       if (this.isComparison) {
-        d3.select('#data1Pane').classed('col-md-12', false).classed('col-md-6', true);
-        d3.select('#data2Pane').style('display', 'flex');
       }
     });
 
@@ -100,13 +100,14 @@ export class VizComponent implements OnInit, OnDestroy {
 
     this.firstWebsiteName = data.link;
 
-    if (isNullOrUndefined(this.wrapper)) {
+    // if (isNullOrUndefined(this.wrapper)) {
       this.wrapper = new LineWrapper();
       this.wrapper.initByElement(this.dataContainer.nativeElement);
-    }
+    // }
     this.calculateDetailLinesToShow();
+    this.setWidthAndVisibility();
 
-    const textWidth = this.dataContainer.nativeElement.getBoundingClientRect().width - 22;
+    const textWidth = this.widthDetail - 22;
     console.log('textwidth: ' + textWidth);
     const textModel = this.wrapper.wrapText(data.markupString, textWidth);
     const yExtent = d3.extent(textModel.map((l) => l.yPos));
@@ -115,6 +116,30 @@ export class VizComponent implements OnInit, OnDestroy {
 
     this.renderDetail(this.text1, this.dataContainer);
     this.renderOverview(this.text1, '#dataOverview', this.dataOverview, this.dataContainer);
+  }
+
+  private setWidthAndVisibility() {
+    const availWidth = (d3.select('#data1Pane').node() as any).getBoundingClientRect().width;
+    console.log('data1Pane width ' + availWidth);
+
+    if ( this.isComparison) {
+        // d3.select('#data1Pane').classed('col-md-12', false).classed('col-md-6', true);
+        d3.select('#dataOverview2').style('display', 'block');
+        d3.select('#dataDetail2').style('display', 'block');
+
+      this.widthOverview = availWidth * 0.1;
+      this.widthDetail = availWidth * 0.3;
+    } else {
+      d3.select('#dataOverview2').style('display', 'none');
+      d3.select('#dataDetail2').style('display', 'none');
+
+    this.widthOverview = availWidth * 0.2;
+      this.widthDetail = availWidth * 0.7;
+    }
+
+    d3.selectAll('.textOverview').style('width', this.widthOverview + 'px');
+    d3.selectAll('.textContainer').style('width', this.widthDetail + 'px');
+
   }
 
   private calculateDetailLinesToShow() {
@@ -143,7 +168,7 @@ export class VizComponent implements OnInit, OnDestroy {
     overviewElem.nativeElement.innerHTML = '';
 
     const margin = {top: 4, right: 9, bottom: 4, left: 2};
-    const width = +overviewElem.nativeElement.getBoundingClientRect().width - margin.left - margin.right;
+    const width = +this.widthOverview - margin.left - margin.right;
     const height = +overviewElem.nativeElement.getBoundingClientRect().height - margin.top - margin.bottom;
 
     const linesToShow = Math.min(this.possibleLinesToShow, text.extent[1] - text.extent[0]);
@@ -248,9 +273,10 @@ export class VizComponent implements OnInit, OnDestroy {
     'background: #222; color: orange;');
 
     this.secondWebsiteName = data.link;
+    this.setWidthAndVisibility();
 
     // const textWidth = 400;
-    const textWidth = this.dataContainer2.nativeElement.getBoundingClientRect().width - 22;
+    const textWidth = this.widthDetail - 22;
     console.log('textwidth: ' + textWidth);
     // console.log('markup before: ' + data.markupString);
     const textModel = this.wrapper.wrapText(data.markupString, textWidth);

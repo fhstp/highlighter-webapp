@@ -13,7 +13,7 @@ export class LineWrapper {
         this.fontFam = window.getComputedStyle(element, null).getPropertyValue('font-family');
         this.fontSize = window.getComputedStyle(element, null).getPropertyValue('font-size');
         const cssLineHeight = window.getComputedStyle(element, null).getPropertyValue('line-height');
-        // console.log('font ' + this.fontFam + ' ' + this.fontSize);
+        console.log('font ' + this.fontFam + ' ' + this.fontSize);
 
         this.initByFontSpec([this.fontFam], [this.fontSize], cssLineHeight);
         // console.log(this.font_size_char);

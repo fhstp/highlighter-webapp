@@ -21,13 +21,13 @@
     <!-- <div id="data1Pane" [className]="isComparison ? 'col-md-6' + ' contentParent' : 'col-md-12' + ' contentParent'"> -->
     <div id="data1Pane" class="col-md-12 contentParent">
       <svg #dataOverview id="dataOverview" class="textOverview"></svg>
-      <div #dataContainer class="textContainer"></div>
+      <div #dataContainer id="dataDetail1" class="textContainer"></div>
       <div>&nbsp;</div>
-    </div>
+    <!-- </div>
 
-    <div id="data2Pane" class="col-md-6 contentParent">
-      <div #dataContainer2 id="dataDetail2" class="textContainer"></div>
-      <svg #dataOverview2 id="dataOverview2" class="textOverview"></svg>
+    <div id="data2Pane" class="col-md-6 contentParent"> -->
+      <div #dataContainer2 id="dataDetail2" class="textContainer" style="display: none"></div>
+      <svg #dataOverview2 id="dataOverview2" class="textOverview" style="display: none"></svg>
     </div>
   </div>
 </div>

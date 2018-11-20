@@ -16,13 +16,12 @@
 }
 
 .textContainer {
-    width: 75%;
+    width: 37%;
     height: 720px;
     word-break: keep-all;
     white-space: pre-wrap;
     margin-bottom: 8%;
     padding: .375rem .75rem;
-    font-size: 1rem;
     line-height: 1.5;
     color: #495057;
     background-color: #fff;
@@ -33,7 +32,7 @@
 }
 
 .textOverview {
-    width: 15%;
+    width: 8%;
     height: 720px;
     background: white;
 }
