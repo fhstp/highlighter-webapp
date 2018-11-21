@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, ViewEncapsulation, OnDestroy } from '@angular/core';
 import * as d3 from 'd3';
 import { Aurum } from '../../shared/aurum.model';
 import { DataStorageService } from '../../shared/data-storage.service';
@@ -18,7 +18,7 @@ interface TextModel {
   styleUrls: ['./viz.component.css'],
   encapsulation: ViewEncapsulation.None
 })
-export class VizComponent implements OnInit {
+export class VizComponent implements OnInit, OnDestroy {
 
   private storedData: Aurum;
   private storedData2: Aurum;
@@ -29,6 +29,8 @@ export class VizComponent implements OnInit {
   private wrapper: LineWrapper;
 
   private possibleLinesToShow = 10;
+  private widthDetail = 400;
+  private widthOverview = 100;
 
   isComparison: boolean;
   firstWebsiteName: string;
@@ -39,6 +41,9 @@ export class VizComponent implements OnInit {
   @ViewChild('dataOverview') dataOverview: ElementRef;
   @ViewChild('dataOverview2') dataOverview2: ElementRef;
 
+  private subscription1;
+  private subscription2;
+
   constructor(private dataStorage: DataStorageService) { }
 
   /**
@@ -48,11 +53,16 @@ export class VizComponent implements OnInit {
   ngOnInit() {
     // Check if we are in comparison mode or not
     this.dataStorage.isComparison.subscribe((val) => {
+      console.log('%c TRIGGERED | isComparison ' + val + ' ... observable',
+      'background: #222; color: hotpink;');
       this.isComparison = val;
+
+      if (this.isComparison) {
+      }
     });
 
     // TODO: Add maybe take(1) as we only need the values once anc can unsubscribe later
-    this.dataStorage.currentData.subscribe((data) => {
+    this.subscription1 = this.dataStorage.currentData.subscribe((data) => {
       console.log('%c TRIGGERED | first data storage... observable',
       'background: #222; color: aquamarine;');
 
@@ -62,15 +72,22 @@ export class VizComponent implements OnInit {
     });
 
     // We need to subscribe only if its a comparison
-    if (this.isComparison) {
-      this.dataStorage.currentData2.subscribe((data) => {
+    // if (this.isComparison) {
+      this.subscription2 = this.dataStorage.currentData2.subscribe((data) => {
         console.log('%c TRIGGERED | second data storage... observable',
         'background: #222; color: aquamarine;');
 
         this.storedData2 = data;
+        console.log(data);
         this.renderSecondText(this.storedData2);
+
+        // render the first again because the div width changed
+        if (this.storedData !== undefined) {
+          this.renderText(this.storedData);
+          // console.log('a');
+        }
       });
-    }
+    // }
   }
 
   /**
@@ -83,13 +100,14 @@ export class VizComponent implements OnInit {
 
     this.firstWebsiteName = data.link;
 
-    if (isNullOrUndefined(this.wrapper)) {
+    // if (isNullOrUndefined(this.wrapper)) {
       this.wrapper = new LineWrapper();
       this.wrapper.initByElement(this.dataContainer.nativeElement);
-    }
+    // }
     this.calculateDetailLinesToShow();
+    this.setWidthAndVisibility();
 
-    const textWidth = this.dataContainer.nativeElement.getBoundingClientRect().width - 22;
+    const textWidth = this.widthDetail - 22;
     const textModel = this.wrapper.wrapText(data.markupString, textWidth);
     const yExtent = d3.extent(textModel.map((l) => l.yPos));
     this.text1 = {lines: textModel, extent: yExtent, detailStart: yExtent[0]};
@@ -97,6 +115,30 @@ export class VizComponent implements OnInit {
 
     this.renderDetail(this.text1, this.dataContainer);
     this.renderOverview(this.text1, '#dataOverview', this.dataOverview, this.dataContainer);
+  }
+
+  private setWidthAndVisibility() {
+    const availWidth = (d3.select('#data1Pane').node() as any).getBoundingClientRect().width;
+
+    if (this.isComparison) {
+      d3.select('#comparisonContainer').style('display', 'block');
+      d3.select('#dataOverview2').style('display', 'block');
+      d3.select('#dataDetail2').style('display', 'block');
+
+      this.widthOverview = availWidth * 0.11;
+      this.widthDetail = availWidth * 0.35;
+    } else {
+      d3.select('#comparisonContainer').style('display', 'none');
+      d3.select('#dataOverview2').style('display', 'none');
+      d3.select('#dataDetail2').style('display', 'none');
+
+      this.widthOverview = availWidth * 0.2;
+      this.widthDetail = availWidth * 0.7;
+    }
+
+    d3.selectAll('.textOverview').style('width', this.widthOverview + 'px');
+    d3.selectAll('.textContainer').style('width', this.widthDetail + 'px');
+
   }
 
   private calculateDetailLinesToShow() {
@@ -125,10 +167,10 @@ export class VizComponent implements OnInit {
     overviewElem.nativeElement.innerHTML = '';
 
     const margin = {top: 4, right: 9, bottom: 4, left: 2};
-    const width = +overviewElem.nativeElement.getBoundingClientRect().width - margin.left - margin.right;
+    const width = +this.widthOverview - margin.left - margin.right;
     const height = +overviewElem.nativeElement.getBoundingClientRect().height - margin.top - margin.bottom;
 
-    const linesToShow = Math.min(this.possibleLinesToShow, text.extent[1] - text.extent[0]);
+    const linesToShow = Math.min(this.possibleLinesToShow, text.extent[1] - text.extent[0] + 1);
 
     const minLineStart = text.lines.reduce((p, c) => {
       return Math.min(p, c.markup.reduce((p2, c2) => Math.min(p2, c2.start), 1000000));
@@ -230,8 +272,12 @@ export class VizComponent implements OnInit {
     'background: #222; color: orange;');
 
     this.secondWebsiteName = data.link;
+    this.setWidthAndVisibility();
 
-    const textWidth = this.dataContainer2.nativeElement.getBoundingClientRect().width - 22;
+    // const textWidth = 400;
+    const textWidth = this.widthDetail - 22;
+    console.log('textwidth: ' + textWidth);
+    // console.log('markup before: ' + data.markupString);
     const textModel = this.wrapper.wrapText(data.markupString, textWidth);
     const yExtent = d3.extent(textModel.map((l) => l.yPos));
 
@@ -241,5 +287,12 @@ export class VizComponent implements OnInit {
 
     this.renderDetail(this.text2, this.dataContainer2);
     this.renderOverview(this.text2, '#dataOverview2', this.dataOverview2, this.dataContainer2);
+  }
+
+  ngOnDestroy() {
+    this.subscription1.unsubscribe();
+    if (this.subscription2 !== undefined) {
+      this.subscription2.unsubscribe();
+    }
   }
 }

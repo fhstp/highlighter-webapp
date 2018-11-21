@@ -8,22 +8,24 @@
   </div>
 
   <div class="row">
-    <div [className]="isComparison ? 'col-md-6' : 'col-md-12'">
-      <span>Origin: <strong>{{ firstWebsiteName }}</strong></span>
-    </div>
-    <div [hidden]="!isComparison" class="col-md-6">
-      <span>Origin: <strong>{{ secondWebsiteName }}</strong></span>
-    </div>
-  </div>
+    <div id="data1Pane" class="col-md-12 contentParent">
+      <div>
+        <div class="website">{{ firstWebsiteName }}</div>
+        <div>
+          <svg #dataOverview id="dataOverview" class="textOverview"></svg>
+          <div #dataContainer id="dataDetail1" class="textContainer"></div>
+        </div>
+      </div>
 
-  <div class="row">
-    <div [className]="isComparison ? 'col-md-6' + ' contentParent' : 'col-md-12' + ' contentParent'">
-      <svg #dataOverview id="dataOverview" class="textOverview"></svg>
-      <div #dataContainer class="textContainer"></div>
-    </div>
-    <div [hidden]="!isComparison" class="col-md-6 contentParent">
-      <div #dataContainer2 class="textContainer"></div>
-      <svg #dataOverview2 id="dataOverview2" class="textOverview"></svg>
+      <div style="width: 5%">&nbsp;</div>
+
+      <div id="comparisonContainer" style="display: none">
+        <div class="website">{{ secondWebsiteName }}</div>
+        <div>
+          <div #dataContainer2 id="dataDetail2" class="textContainer"></div>
+          <svg #dataOverview2 id="dataOverview2" class="textOverview"></svg>
+        </div>
+      </div>
     </div>
   </div>
 </div>
