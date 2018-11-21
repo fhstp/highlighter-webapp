@@ -14,7 +14,6 @@ export class ColorGeneratorService {
   private currentRules = new Map();
   private currentColors = new Map();
   private criteriasArray: Array<string>;
-  private criteriasArrayStripped = [];
   private nColors: number;
 
   generateStyleRules(searchTerms?: Array<string>) {
@@ -33,6 +32,7 @@ export class ColorGeneratorService {
     // Generate the random colors next and the styles for each
     const startColor = Math.random();
     cleaned.forEach((crit, i) => {
+      // Add the main rule:
       const rgb = this.HSVtoRGB(startColor + (1 / this.nColors * i), 0.7, 1);
       this.addRule(`.${crit.toLowerCase()}`,
         `background-color: rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`,
@@ -41,7 +41,20 @@ export class ColorGeneratorService {
       // add CSS for overview rects
       this.addRule(`.textOverview rect.${crit.toLowerCase()}`,
         `fill: rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`);
+
+      // Add the sub rules if present
+      const currentCritSubCat = criteriasConfig[crit];
+      if (currentCritSubCat !== undefined) {
+        currentCritSubCat.forEach((el) => {
+          this.addRule(`.${el.toLowerCase()}`,
+          `background-color:  rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`);
+          this.addRule(`.textOverview rect.${el.toLowerCase()}`,
+          `fill: rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`);
+        });
+      }
     });
+
+    console.log('test: ', this.currentColors, this.currentRules, this.styleSheet);
 
     // Store the rules we created globally
     this.dataStorage.currentStyles = this.currentRules;
@@ -125,12 +138,12 @@ export class ColorGeneratorService {
   }
 
   private cleanCriterias(): Array<string> {
-    let allCriterias = [];
-    let selfCreatedCriterias = [];
-    let sentOfficialCriterias = [];
-    let indexToKeep = [];
+    const allCriterias = [];
+    const selfCreatedCriterias = [];
+    const sentOfficialCriterias = [];
+    const indexToKeep = [];
     let criteriasToKeep = [];
-    let cleanedCriterias = [];
+    const cleanedCriterias = [];
 
     const criterias = this.criteriasArray;
     const categories = Object.keys(criteriasConfig).slice(1);
