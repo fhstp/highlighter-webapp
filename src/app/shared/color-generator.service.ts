@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { DataStorageService } from './data-storage.service';
 
+import criteriasConfig from '../../assets/criterias.json';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -11,7 +13,8 @@ export class ColorGeneratorService {
   private styleSheet;
   private currentRules = new Map();
   private currentColors = new Map();
-  private criteriasArray: Array<String>;
+  private criteriasArray: Array<string>;
+  private criteriasArrayStripped = [];
   private nColors: number;
 
   generateStyleRules(searchTerms?: Array<string>) {
@@ -24,11 +27,12 @@ export class ColorGeneratorService {
       this.criteriasArray = this.dataStorage.searchTermsInput;
     }
 
-    this.nColors = this.criteriasArray.length;
+    const cleaned = this.cleanCriterias();
+    this.nColors = cleaned.length;
 
     // Generate the random colors next and the styles for each
     const startColor = Math.random();
-    this.criteriasArray.forEach((crit, i) => {
+    cleaned.forEach((crit, i) => {
       const rgb = this.HSVtoRGB(startColor + (1 / this.nColors * i), 0.7, 1);
       this.addRule(`.${crit.toLowerCase()}`,
         `background-color: rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`,
@@ -70,8 +74,8 @@ export class ColorGeneratorService {
     const storeRule = this.styleSheet.insertRule(selector + '{' + rule + '}',
       this.currentRules.size);
     this.currentRules.set(selector, {
-        'posStylesheet': storeRule,
-        'color': rule
+      'posStylesheet': storeRule,
+      'color': rule
     });
 
     if (color) {
@@ -95,7 +99,7 @@ export class ColorGeneratorService {
    * @param v value
    * @returns RGB object with 3 keys (r, g, b) and their values
    */
-  private HSVtoRGB(h, s, v): {r: number, g: number, b: number} {
+  private HSVtoRGB(h, s, v): { r: number, g: number, b: number } {
     let r, g, b, i, f, p, q, t;
     if (arguments.length === 1) {
       s = h.s, v = h.v, h = h.h;
@@ -118,5 +122,65 @@ export class ColorGeneratorService {
       g: Math.round(g * 255),
       b: Math.round(b * 255)
     };
+  }
+
+  private cleanCriterias(): Array<string> {
+    let allCriterias = [];
+    let selfCreatedCriterias = [];
+    let sentOfficialCriterias = [];
+    let indexToKeep = [];
+    let criteriasToKeep = [];
+    let cleanedCriterias = [];
+
+    const criterias = this.criteriasArray;
+    const categories = Object.keys(criteriasConfig).slice(1);
+
+    // 1: Read the criterias json and make just one array out of it.
+    categories.forEach((cat) => {
+      allCriterias.push(cat, ...criteriasConfig[cat]);
+    });
+
+    // 2: Store the self created criterias seperatly to later attach them
+    criterias.forEach((crit) => {
+       if (allCriterias.indexOf(crit) === -1) {
+         selfCreatedCriterias.push(crit);
+       } else {
+         sentOfficialCriterias.push(crit);
+       }
+    });
+
+    // 3: From the official criterias we remove now the ones that are not in our stream
+    for (let i = 0; i < categories.length; i++) {
+      // Store the current crit we have
+      const currentCrit = categories[i];
+      const indexPos = sentOfficialCriterias.indexOf(currentCrit);
+      if (indexPos > -1) {
+        const nrOfCrit = criteriasConfig[categories[i]].length;
+        // This makes sure that we only get main categories
+        if (sentOfficialCriterias[indexPos + nrOfCrit] !== undefined) {
+          indexToKeep.push(indexPos);
+        }
+      }
+    }
+
+    // 4: Find now all the criterias we need to keep
+    criteriasToKeep = sentOfficialCriterias.filter((item, index) => {
+      if (indexToKeep.indexOf(index) !== -1) {
+        return true;
+      }
+    });
+
+    // 5: Finally combine the main criterias and self created ones
+    cleanedCriterias.push(...criteriasToKeep, ...selfCreatedCriterias);
+
+    return cleanedCriterias;
+    // console.log('Received criterias: ', criterias,
+    // ' All Criterias: ', allCriterias,
+    // ' Self Created Criterias: ', selfCreatedCriterias,
+    // ' Official Criterias: ', sentOfficialCriterias,
+    // ' Criterias to keep (main categories): ', indexToKeep,
+    // ' Criterias to remove: ', criteriasToKeep,
+    // ' Main criterias we use: ', sentMainCriterias,
+    // ' Cleaned criterias array: ', cleanedCriterias);
   }
 }

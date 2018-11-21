@@ -20,7 +20,7 @@ export class DataStorageService {
   public readonly isComparison = this._isComparsion.asObservable();
 
   // The search terms of both
-  private _searchTermsInput: Array<String>;
+  private _searchTermsInput: Array<string>;
   // The set colors and position of rule in stylesheet
   private _currentRules: Map<String, Object>;
   // The current colors as Observable as we need it at creation time
@@ -91,7 +91,7 @@ export class DataStorageService {
   /**
    * Getter method in order to retrieve all the search terms;
    */
-  get searchTermsInput(): Array<String> {
+  get searchTermsInput(): Array<string> {
     return this._searchTermsInput;
   }
 
