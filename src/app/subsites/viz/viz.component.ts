@@ -29,6 +29,8 @@ export class VizComponent implements OnInit, OnDestroy {
   private wrapper: LineWrapper;
 
   private possibleLinesToShow = 10;
+  private widthDetail = 400;
+  private widthOverview = 100;
 
   private subscription1;
   private subscription2;
@@ -51,6 +53,8 @@ export class VizComponent implements OnInit, OnDestroy {
   ngOnInit() {
     // Check if we are in comparison mode or not
     this.dataStorage.isComparison.subscribe((val) => {
+      console.log('%c TRIGGERED | isComparison ' + val + ' ... observable',
+        'background: #222; color: hotpink;');
       this.isComparison = val;
     });
 
@@ -60,17 +64,21 @@ export class VizComponent implements OnInit, OnDestroy {
         'background: #222; color: aquamarine;');
 
       this.storedData = data;
-
       this.renderText(this.storedData);
     });
 
-    // We need to subscribe only if its a comparison
+
     this.subscription2 = this.dataStorage.currentData2.subscribe((data) => {
       console.log('%c TRIGGERED | second data storage... observable',
         'background: #222; color: aquamarine;');
 
       this.storedData2 = data;
       this.renderSecondText(this.storedData2);
+
+      // render the first again because the div width changed
+      if (this.storedData !== undefined) {
+        this.renderText(this.storedData);
+      }
     });
   }
 
@@ -79,19 +87,17 @@ export class VizComponent implements OnInit, OnDestroy {
    * @param data to show to the user
    */
   private renderText(data: Aurum) {
-    console.log('RENDER TEXT 1');
     console.log('%c FROM component | Inside renderText() function (ONE INPUT).',
       'background: #222; color: orange;');
 
     this.firstWebsiteName = data.link;
 
-    if (isNullOrUndefined(this.wrapper)) {
-      this.wrapper = new LineWrapper();
-      this.wrapper.initByElement(this.dataContainer.nativeElement);
-    }
+    this.wrapper = new LineWrapper();
+    this.wrapper.initByElement(this.dataContainer.nativeElement);
     this.calculateDetailLinesToShow();
+    this.setWidthAndVisibility();
 
-    const textWidth = this.dataContainer.nativeElement.getBoundingClientRect().width - 22;
+    const textWidth = this.widthDetail - 22;
     const textModel = this.wrapper.wrapText(data.markupString, textWidth);
     const yExtent = d3.extent(textModel.map((l) => l.yPos));
     this.text1 = { lines: textModel, extent: yExtent, detailStart: yExtent[0] };
@@ -101,8 +107,31 @@ export class VizComponent implements OnInit, OnDestroy {
     this.renderOverview(this.text1, '#dataOverview', this.dataOverview, this.dataContainer);
   }
 
+  private setWidthAndVisibility() {
+    const availWidth = (d3.select('#data1Pane').node() as any).getBoundingClientRect().width;
+
+    if (this.isComparison) {
+      d3.select('#comparisonContainer').style('display', 'block');
+      d3.select('#dataOverview2').style('display', 'block');
+      d3.select('#dataDetail2').style('display', 'block');
+
+      this.widthOverview = availWidth * 0.11;
+      this.widthDetail = availWidth * 0.35;
+    } else {
+      d3.select('#comparisonContainer').style('display', 'none');
+      d3.select('#dataOverview2').style('display', 'none');
+      d3.select('#dataDetail2').style('display', 'none');
+
+      this.widthOverview = availWidth * 0.2;
+      this.widthDetail = availWidth * 0.7;
+    }
+
+    d3.selectAll('.textOverview').style('width', this.widthOverview + 'px');
+    d3.selectAll('.textContainer').style('width', this.widthDetail + 'px');
+
+  }
+
   private calculateDetailLinesToShow() {
-    console.log('CALCULATE DETAIL LINES TO SHOW');
     // calculate detail extent based on heigth of detail comp & measured lineHeight
     const detailHeight = this.dataContainer.nativeElement.getBoundingClientRect().height
       // substract 40% of a line height
@@ -112,6 +141,7 @@ export class VizComponent implements OnInit, OnDestroy {
   }
 
   private renderDetail(text: TextModel, elem: ElementRef) {
+    console.log('text: ', text);
     console.log('%c FROM component | Inside renderDetail() function', 'background: #222; color: orange;');
 
     const stringToPrint = text.lines
@@ -122,17 +152,16 @@ export class VizComponent implements OnInit, OnDestroy {
   }
 
   private renderOverview(text: TextModel, overviewSelector: string, overviewElem: ElementRef, detailElem: ElementRef) {
-    console.log('RENDER OVERVIEW');
     console.log('%c FROM component | Inside renderOverview() function', 'background: #222; color: orange;');
 
     // make sure we start clean
     overviewElem.nativeElement.innerHTML = '';
 
     const margin = { top: 4, right: 9, bottom: 4, left: 2 };
-    const width = +overviewElem.nativeElement.getBoundingClientRect().width - margin.left - margin.right;
+    const width = +this.widthOverview - margin.left - margin.right;
     const height = +overviewElem.nativeElement.getBoundingClientRect().height - margin.top - margin.bottom;
 
-    const linesToShow = Math.min(this.possibleLinesToShow, text.extent[1] - text.extent[0]);
+    const linesToShow = Math.min(this.possibleLinesToShow, text.extent[1] - text.extent[0] + 1);
 
     const minLineStart = text.lines.reduce((p, c) => {
       return Math.min(p, c.markup.reduce((p2, c2) => Math.min(p2, c2.start), 1000000));
@@ -172,8 +201,6 @@ export class VizComponent implements OnInit, OnDestroy {
       .attr('width', (d) => {
         const w = x(d.end) - x(d.start);
         if (w < 1) {
-          // console.log(d);
-          // console.log(x(d.start), x(d.end), w);
           return 1;
         } else {
           return x(d.end) - x(d.start);
@@ -191,10 +218,7 @@ export class VizComponent implements OnInit, OnDestroy {
       .extent([[-1, yOffset - 1], [width + 1, height - yOffset + 1]])
       .on('end', () => {
         if (!d3.event.sourceEvent) { return; } // Only transition after input.
-        // console.log(d3.event);
-
         const d0 = d3.event.selection.map((d) => y.invert(d - yOffset));
-        // console.log(d0);
         const d1 = d0.map(Math.round);
 
         // correct extent and at edges
@@ -222,6 +246,24 @@ export class VizComponent implements OnInit, OnDestroy {
 
     // removes handle to resize the brush
     d3.selectAll('.brush>.handle').remove();
+
+    // enable scrolling
+    detailElem.nativeElement.addEventListener('wheel', event => {
+      const delta = Math.sign(event.wheelDelta);
+      text.detailStart -= delta;
+
+      // correct extent and at edges
+      if (text.detailStart < text.extent[0]) {
+        text.detailStart = text.extent[0];
+      }
+      if (text.detailStart + linesToShow - 1 > text.extent[1]) {
+        text.detailStart = text.extent[1] - linesToShow + 1;
+      }
+
+      // update brush & detail view
+      gBrush.call(brush.move, [text.detailStart, text.detailStart + linesToShow - 1].map(brushScale));
+      this.renderDetail(text, detailElem);
+    });
   }
 
 
@@ -230,26 +272,26 @@ export class VizComponent implements OnInit, OnDestroy {
    * @param data to show in the second input
    */
   private renderSecondText(data: Aurum) {
-    console.log('RENDER TEXT 2');
     console.log('%c FROM component | Inside renderSecondText() function (TWO INPUTS)',
       'background: #222; color: orange;');
 
     this.secondWebsiteName = data.link;
+    this.setWidthAndVisibility();
 
-    const textWidth = this.dataContainer2.nativeElement.getBoundingClientRect().width - 22;
+    // const textWidth = 400;
+    const textWidth = this.widthDetail - 22;
     const textModel = this.wrapper.wrapText(data.markupString, textWidth);
     const yExtent = d3.extent(textModel.map((l) => l.yPos));
 
     this.text2 = { lines: textModel, extent: yExtent, detailStart: yExtent[0] };
-    // console.log(this.text2);
-    // console.log('hello re sec' + yExtent);
-
     this.renderDetail(this.text2, this.dataContainer2);
     this.renderOverview(this.text2, '#dataOverview2', this.dataOverview2, this.dataContainer2);
   }
 
   ngOnDestroy() {
     this.subscription1.unsubscribe();
-    this.subscription2.unsubscribe();
+    if (this.subscription2 !== undefined) {
+      this.subscription2.unsubscribe();
+    }
   }
 }

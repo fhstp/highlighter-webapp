@@ -17,6 +17,9 @@ export class ColorGeneratorService {
   private nColors: number;
 
   generateStyleRules(searchTerms?: Array<string>) {
+    // Used to store the search terms later and sub categories
+    const terms = {};
+
     // Cretae the empty stylesheet
     this.createStylesheet();
     // Get the criterias now
@@ -34,9 +37,11 @@ export class ColorGeneratorService {
     cleaned.forEach((crit, i) => {
       // Add the main rule:
       const rgb = this.HSVtoRGB(startColor + (1 / this.nColors * i), 0.7, 1);
+      const fontColor = this.getFontColorFromRGB(rgb);
+
       this.addRule(`.${crit.toLowerCase()}`,
-        `background-color: rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`,
-        `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`);
+        `background-color: rgb(${rgb.r}, ${rgb.g}, ${rgb.b});
+        color: ${fontColor};`, `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`);
 
       // add CSS for overview rects
       this.addRule(`.textOverview rect.${crit.toLowerCase()}`,
@@ -47,17 +52,20 @@ export class ColorGeneratorService {
       if (currentCritSubCat !== undefined) {
         currentCritSubCat.forEach((el) => {
           this.addRule(`.${el.toLowerCase()}`,
-          `background-color:  rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`);
+            `background-color:  rgb(${rgb.r}, ${rgb.g}, ${rgb.b});
+            color: ${fontColor}`);
           this.addRule(`.textOverview rect.${el.toLowerCase()}`,
-          `fill: rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`);
+            `fill: rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`);
         });
       }
+
+      // Save the terms and subcategories for later use
+      terms[crit] = criteriasConfig[crit];
     });
 
-    console.log('test: ', this.currentColors, this.currentRules, this.styleSheet);
-
-    // Store the rules we created globally
+    // Store the rules we created globally as well as the search terms
     this.dataStorage.currentStyles = this.currentRules;
+    this.dataStorage.changeSearchTerms(terms);
 
     // Store the colors only if we have some
     if (this.currentColors.size > 0) {
@@ -137,6 +145,30 @@ export class ColorGeneratorService {
     };
   }
 
+  /**
+   * This method is based on: https://stackoverflow.com/a/43521261/4807354
+   * and calculates the luminance of the given rgb color. Based on this the
+   * font color is changed to black or white.
+   * @param rgb color to calculate the luminance from
+   */
+  private getFontColorFromRGB(rgb: { r: number, g: number, b: number }) {
+    const black = 'rgb(0, 0, 0)';
+    const white = 'rgb(255, 255, 255)';
+
+    const luminance = Math.sqrt(0.241
+      * Math.pow(rgb.r, 2) + 0.691 * Math.pow(rgb.g, 2) + 0.068
+      * Math.pow(rgb.b, 2));
+    if (luminance >= 130) {
+      return black;
+    } else {
+      return white;
+    }
+  }
+
+  /**
+   * This method is used to clean the one dimensional array of search terms and categorize it
+   * between main criterias and sub criterias as well self defined ones.
+   */
   private cleanCriterias(): Array<string> {
     const allCriterias = [];
     const selfCreatedCriterias = [];
@@ -155,11 +187,11 @@ export class ColorGeneratorService {
 
     // 2: Store the self created criterias seperatly to later attach them
     criterias.forEach((crit) => {
-       if (allCriterias.indexOf(crit) === -1) {
-         selfCreatedCriterias.push(crit);
-       } else {
-         sentOfficialCriterias.push(crit);
-       }
+      if (allCriterias.indexOf(crit) === -1) {
+        selfCreatedCriterias.push(crit);
+      } else {
+        sentOfficialCriterias.push(crit);
+      }
     });
 
     // 3: From the official criterias we remove now the ones that are not in our stream

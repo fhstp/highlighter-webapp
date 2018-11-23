@@ -8,7 +8,7 @@ export class DataStorageService {
   private defaultData = {
     searchTerms: ['Sample'],
     found_occurences: [{}],
-    markupString: ['Example', 'Text', '\n', 'With', 'some', 'sample', 'Text.'],
+    markupString: ['Example', 'Text', '\n', 'With', 'some', 'sample', 'Text.', '\n'],
     link: 'www.example.com'
   };
 
@@ -23,6 +23,11 @@ export class DataStorageService {
   private _searchTermsInput: Array<string>;
   // The set colors and position of rule in stylesheet
   private _currentRules: Map<String, Object>;
+
+  // Search terms cleaned with their subclasses
+  private _searchTerms = new BehaviorSubject<Object>({'Sample': ['Subsample1', 'Subsample2']});
+  public readonly searchTerms = this._searchTerms.asObservable();
+
   // The current colors as Observable as we need it at creation time
   private _currentColors = new BehaviorSubject<Map<string, string>>(this.defaultColor);
   public readonly currentColors = this._currentColors.asObservable();
@@ -71,22 +76,23 @@ export class DataStorageService {
     this._currentColors.next(color);
   }
 
+  /**
+   * This method is used in order to change the state of the application. We can
+   * decide if it's in comparison mode or not.
+   * @param state of the application (either comparison or not)
+   */
   changeIsComparison(state: boolean) {
     this._isComparsion.next(state);
   }
-//   /**
-//  * Getter method for the check if we are in comparsion mode or not.
-//  */
-//   get isComparsion(): boolean {
-//     return this._isComparsion;
-//   }
 
-//   /**
-//    * Setter method for the check if we are in comparsion mode or not.
-//    */
-//   set isComparison(value: boolean) {
-//     this._isComparsion = value;
-//   }
+  /**
+   * This method is used to change the current search terms and notfiy all subscribers about the
+   * change in order to trigger some events.
+   * @param terms that will be used
+   */
+  changeSearchTerms(terms: Object) {
+    this._searchTerms.next(terms);
+  }
 
   /**
    * Getter method in order to retrieve all the search terms;
