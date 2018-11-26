@@ -10,3 +10,8 @@
     -webkit-box-shadow: 2px 2px 8px 2px #BEBEBE;
     box-shadow: 2px 2px 8px 2px #BEBEBE;
 }
+
+.specialTags {
+  padding: 4px;
+  margin-left: 4px;
+}

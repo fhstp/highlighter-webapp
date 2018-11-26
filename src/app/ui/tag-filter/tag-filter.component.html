@@ -1,6 +1,76 @@
 <div class="tagWrapper">
-  <span *ngFor="let term of searchTerms; let i = index;"
-    class='spanTags' [style.background-color]="rulesClean[i]">
-    {{ term }}</span>
+  <ng-select
+    [items]="finalTerms"
+    [multiple]="true"
+    bindLabel="name"
+    groupBy="group"
+    [selectableGroup]="true"
+    [selectableGroupAsModel]="false"
+    [closeOnSelect]="false"
+    bindValue="name"
+    [(ngModel)]="termsSelected"
+    (add)="onAdd($event)"
+    (remove)="onRemove($event)"
+    (clear)="onClear()">
+    <ng-template ng-optgroup-tmp let-item="item" let-item$="item$" let-index="index">
+      <div *ngIf="item.group !== 'Andere'">
+        <input id="item-{{index}}" type="checkbox" [ngModel]="item$.selected" />
+        <span class="specialTags" [ngStyle]="{
+                                      'color': finalTerms[index].fontC,
+                                      'background-color': finalTerms[index].color}">{{item.group
+          | uppercase}} (Gruppe)</span>
+      </div>
+      <div *ngIf="item.group === 'Andere'">
+        <input id="item-{{index}}" type="checkbox" [ngModel]="item$.selected" />
+        <span class="specialTags">{{item.group | uppercase}} <small>(selbst definierte)</small></span>
+      </div>
+    </ng-template>
+
+    <ng-template ng-label-tmp let-item="item" let-clear="clear">
+      <span class="ng-value-label" [ngStyle]="{
+                    'color': item.fontC,
+                    'background-color': item.color}">{{item.name}}</span>
+      <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+    </ng-template>
+
+    <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+      <input id="item-{{index}}" type="checkbox" [ngModel]="item$.selected" />
+      <span class="specialTags" [ngStyle]="{
+            'color': item.fontC,
+            'background-color': item.color}">{{item.name}}</span>
+    </ng-template>
+    </ng-select>
 </div>
+<p>{{ termsSelected }}</p>
+
+<!-- OTHER ARPROACH WITHOUT CHECKBOXES-->
+<!-- <ng-template ng-optgroup-tmp let-item="item" let-index="index">
+      <div *ngIf="item.group !== 'Other'">
+        <span class="specialTags" [ngStyle]="{
+                    'color': finalTerms[index].fontC,
+                    'background-color': finalTerms[index].color}">{{item.group | uppercase}}</span>
+      </div>
+      <div *ngIf="item.group === 'Other'">
+        <span class="specialTags">{{item.group | uppercase}}</span>
+      </div>
+    </ng-template>
+
+    <ng-template ng-label-tmp let-item="item" let-clear="clear">
+      <span class="ng-value-label" [ngStyle]="{
+              'color': item.fontC,
+              'background-color': item.color}">{{item.name}}</span>
+      <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+    </ng-template>
+
+    <ng-template ng-option-tmp let-item="item" let-index="index">
+      <span class="specialTags" [ngStyle]="{
+              'color': item.fontC,
+              'background-color': item.color}">{{item.name}}</span>
+    </ng-template> -->
+<!-- OTHER ARPROACH WITH CHECKBOXES-->
+
+<!-- OLD APPROACH JUST TAGS-->
+<!-- <span *ngFor="let term of searchTerms; let i = index;"
+  class='spanTags' [style.background-color]="rulesClean[i]">
+  {{ term }}</span> -->
 <!-- ({{ foundOcc[i].length }}) -->
