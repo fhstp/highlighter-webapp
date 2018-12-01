@@ -12,7 +12,7 @@ export class DataStorageService {
     link: 'www.example.com'
   };
 
-  private defaultColor = new Map([['sample', 'rgb(200, 74, 12)'], ['test', 'rgb(220, 82, 110)']]);
+  private defaultColor = new Map([['.sample', 'rgb(200, 74, 12)'], ['.test', 'rgb(220, 82, 110)']]);
   private defaultComparison = false;
 
   // Global variable that is used to see if we are in comparsion mode or not

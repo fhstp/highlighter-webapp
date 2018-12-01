@@ -41,7 +41,7 @@ export class ColorGeneratorService {
 
       this.addRule(`.${crit.toLowerCase()}`,
         `background-color: rgb(${rgb.r}, ${rgb.g}, ${rgb.b});
-        color: ${fontColor};`, `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`);
+        color: ${fontColor};`, `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`, `${fontColor}`);
 
       // add CSS for overview rects
       this.addRule(`.textOverview rect.${crit.toLowerCase()}`,
@@ -91,7 +91,7 @@ export class ColorGeneratorService {
    * @param selector of the rule to add
    * @param rule we want to add as string
    */
-  private addRule(selector: string, rule: string, color?: string) {
+  private addRule(selector: string, rule: string, color?: string, fontC?: string) {
     const storeRule = this.styleSheet.insertRule(selector + '{' + rule + '}',
       this.currentRules.size);
     this.currentRules.set(selector, {
@@ -99,8 +99,8 @@ export class ColorGeneratorService {
       'color': rule
     });
 
-    if (color) {
-      this.currentColors.set(selector, color);
+    if (color && fontC) {
+      this.currentColors.set(selector, color + '|' + fontC);
     }
   }
 

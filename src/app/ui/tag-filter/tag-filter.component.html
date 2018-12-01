@@ -1,6 +1,6 @@
 <div class="tagWrapper">
   <ng-select
-    [items]="finalTerms"
+    [items]="tagFilterData"
     [multiple]="true"
     bindLabel="name"
     groupBy="group"
@@ -15,9 +15,8 @@
     <ng-template ng-optgroup-tmp let-item="item" let-item$="item$" let-index="index">
       <div *ngIf="item.group !== 'Andere'">
         <input id="item-{{index}}" type="checkbox" [ngModel]="item$.selected" />
-        <span class="specialTags" [ngStyle]="{
-                                      'color': finalTerms[index].fontC,
-                                      'background-color': finalTerms[index].color}">{{item.group
+        <span class="specialTags"  [ngStyle]="{'color': tagFilterData[index].fontC,
+          'background-color': tagFilterData[index].color}">{{item.group
           | uppercase}} (Gruppe)</span>
       </div>
       <div *ngIf="item.group === 'Andere'">
@@ -30,7 +29,7 @@
       <span class="ng-value-label" [ngStyle]="{
                     'color': item.fontC,
                     'background-color': item.color}">{{item.name}}</span>
-      <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+      <span class="ng-value-icon right" (click)="trigger(clear, item)" aria-hidden="true">×</span>
     </ng-template>
 
     <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
@@ -41,8 +40,6 @@
     </ng-template>
     </ng-select>
 </div>
-<p>{{ termsSelected }}</p>
-
 <!-- OTHER ARPROACH WITHOUT CHECKBOXES-->
 <!-- <ng-template ng-optgroup-tmp let-item="item" let-index="index">
       <div *ngIf="item.group !== 'Other'">

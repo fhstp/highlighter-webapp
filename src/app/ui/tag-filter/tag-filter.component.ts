@@ -10,112 +10,33 @@ import { map } from 'rxjs/operators';
 })
 export class TagFilterComponent implements OnInit {
 
-  tagFilterData: any;
+  combinedObservables: any;
   searchTerms: string[];
   foundOcc: Object[];
   styleRules: Map<string, string>;
 
-  rulesClean: string[];
-
-  // This is the desired structure...
-  finalTerms: any;
+  // Desired structure is ready
+  tagFilterData: any;
+  // Terms that are selected
   termsSelected: any;
 
-  constructor(private dataStorage: DataStorageService) {
-    // Just filling the desired structure and build it later on...
-    this.finalTerms = [
-      {
-        name: 'Garantie',
-        color: 'rgb(157, 18, 186)',
-        fontC: 'rgb(255, 255, 255)',
-        group: 'Garantie',
-        occ: 7,
-        isMain: true
-      },
-      {
-        name: 'Mangel',
-        color: 'rgb(157, 18, 186)',
-        fontC: 'rgb(255, 255, 255)',
-        group: 'Garantie',
-        occ: 2,
-        isMain: false
-      },
-      {
-        name: 'Gewähr',
-        color: 'rgb(157, 18, 186)',
-        fontC: 'rgb(255, 255, 255)',
-        group: 'Garantie',
-        occ: 15,
-        isMain: false
-      },
-      {
-        name: 'Gewährleistung',
-        color: 'rgb(157, 18, 186)',
-        fontC: 'rgb(255, 255, 255)',
-        group: 'Garantie',
-        occ: 3,
-        isMain: false
-      },
-      {
-        name: 'Umtausch',
-        color: 'rgb(244, 199, 65)',
-        fontC: 'rgb(0, 0, 0)',
-        group: 'Umtausch',
-        occ: 3,
-        isMain: false
-      },
-      {
-        name: 'Mangel',
-        color: 'rgb(244, 199, 65)',
-        fontC: 'rgb(0, 0, 0)',
-        group: 'Umtausch',
-        occ: 3,
-        isMain: false
-      },
-      {
-        name: 'Beschädigung',
-        color: 'rgb(244, 199, 65)',
-        fontC: 'rgb(0, 0, 0)',
-        group: 'Umtausch',
-        occ: 3,
-        isMain: false
-      },
-      {
-        name: 'test',
-        color: 'rgb(199, 255, 33)',
-        fontC: 'rgb(0, 0, 0)',
-        group: 'Andere',
-        occ: 2,
-        isMain: true
-      },
-      {
-        name: 'paypal',
-        color: 'rgb(65, 244, 193)',
-        fontC: 'rgb(0, 0, 0)',
-        group: 'Andere',
-        occ: 2,
-        isMain: true
-      }
-    ];
-  }
+  constructor(private dataStorage: DataStorageService) { }
 
   ngOnInit() {
     // Combine both observable streams together and wait till both "finished" with zip
-    this.tagFilterData = zip(
+    this.combinedObservables = zip(
       this.dataStorage.currentData,
       this.dataStorage.currentColors,
       this.dataStorage.searchTerms
+    ).pipe(
+      map(([first, second, third]) => {
+        return {
+          searchTerms: third,
+          foundOcc: first.found_occurences,
+          styleRules: second
+        };
+      })
     )
-      .pipe(
-        map(([first, second, third]) => {
-          console.log('all: ', first, second, third);
-          return {
-            searchTerms: third,
-            foundOcc: first.found_occurences,
-            styleRules: second
-          };
-        })
-      )
       .subscribe(data => {
         this.assembleTags(data);
       });
@@ -124,19 +45,75 @@ export class TagFilterComponent implements OnInit {
   assembleTags(data: any) {
     // Object containing all main categories and their sub categories as array
     const searchTerms = data.searchTerms;
+    // Used to extract the tags and their colors as array of 2 values
+    const arrayOfColors = [];
 
-    // First extract the main categories from the search terms property
-    let mainCategories: Array<string>;
-    mainCategories = Object.keys(searchTerms);
-
+    // Store some properties global
     // this.searchTerms = data.searchTerms;
     this.foundOcc = data.foundOcc;
     this.styleRules = data.styleRules;
 
-    // this.rulesClean = this.searchTerms.map(e => {
-    //   const rule = this.styleRules.get('.' + e.toLowerCase());
-    //   return rule;
-    // });
+    // 1) Extract the main categories from the search terms property
+    let mainCategories: Array<string>;
+    mainCategories = Object.keys(searchTerms);
+
+    // 2) Create and array of objects where each has the key as the main category and the colors
+    this.styleRules.forEach(function (value, key) {
+      const color = {};
+      color[key] = [...value.split('|')];
+      arrayOfColors.push(color);
+    }, this.styleRules);
+
+    // 3) Iterate over each main categorie and its sub categories and build the rewuired structure
+    const result = [];
+    const selected = [];
+
+    mainCategories.forEach((crit, idx) => {
+      // Crit as class name
+      const critClass = '.' + crit.toLowerCase();
+      const mainCrit = {};
+
+      // Get the current color for each class from the colors array
+      const critColors = arrayOfColors.find(v => v[critClass]);
+      // The name property
+      mainCrit['name'] = crit;
+      // The color property is first in array
+      mainCrit['color'] = critColors[critClass][0];
+      // The font color property is second in array
+      mainCrit['fontC'] = critColors[critClass][1];
+      // The group property for the main categories is the same as crit
+      mainCrit['group'] = searchTerms[crit] !== undefined ? crit : 'Andere';
+      // The occ not read yet so all is 1
+      mainCrit['occ'] = 1;
+      // The boolean is true as we are in main categorie now
+      mainCrit['isMain'] = true;
+
+      result.push(mainCrit);
+      selected.push(crit);
+
+      // Add Sub Criterias if we have some
+      if (searchTerms[crit] !== undefined) {
+        const currentSubCrits = searchTerms[crit];
+        currentSubCrits.forEach((sCrit) => {
+          const subCrit = {};
+          subCrit['name'] = sCrit;
+          subCrit['color'] = critColors[critClass][0];
+          subCrit['fontC'] = critColors[critClass][1];
+          subCrit['group'] = crit;
+          subCrit['occ'] = 1;
+          subCrit['isMain'] = false;
+
+          result.push(subCrit);
+          selected.push(sCrit);
+        });
+      }
+    });
+
+    this.tagFilterData = result;
+    this.termsSelected = selected;
+    // console.log('search terms: ', searchTerms, ' main categories: ', mainCategories,
+    // 'occurences: ', this.foundOcc, ' style rules: ', this.styleRules);
+    // console.log(arrayOfColors);
   }
 
   /**
@@ -161,5 +138,15 @@ export class TagFilterComponent implements OnInit {
    */
   onClear() {
     console.log('All removed');
+  }
+
+  /**
+   * This is a workaround for the knwon template defined method bug.
+   * https://github.com/angular/angular/issues/16643
+   * @param callback Method to call or trigger
+   * @param args Arguments of the method to call
+   */
+  trigger(callback, ...args) {
+    return callback(...args);
   }
 }
