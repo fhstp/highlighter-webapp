@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { DataStorageService } from './data-storage.service';
-
+import Helper from '../util/helper';
 import criteriasConfig from '../../assets/criterias.json';
 
 @Injectable({
@@ -36,8 +36,8 @@ export class ColorGeneratorService {
     const startColor = Math.random();
     cleaned.forEach((crit, i) => {
       // Add the main rule:
-      const rgb = this.HSVtoRGB(startColor + (1 / this.nColors * i), 0.7, 1);
-      const fontColor = this.getFontColorFromRGB(rgb);
+      const rgb = Helper.HSVtoRGB(startColor + (1 / this.nColors * i), 0.7, 1);
+      const fontColor = Helper.getFontColorFromRGB(rgb);
 
       this.addRule(`.${crit.toLowerCase()}`,
         `background-color: rgb(${rgb.r}, ${rgb.g}, ${rgb.b});
@@ -108,60 +108,9 @@ export class ColorGeneratorService {
    * This method removes all rules we created.
    */
   private removeAllRules() {
-    for (let i = 0; i < this.styleSheet.rules.length; i++) {
-      this.styleSheet.removeRule(i);
-    }
-  }
-
-  /**
-   * This method is used in order transform an hsv value to a rgb value.
-   * @param h hue
-   * @param s saturation
-   * @param v value
-   * @returns RGB object with 3 keys (r, g, b) and their values
-   */
-  private HSVtoRGB(h, s, v): { r: number, g: number, b: number } {
-    let r, g, b, i, f, p, q, t;
-    if (arguments.length === 1) {
-      s = h.s, v = h.v, h = h.h;
-    }
-    i = Math.floor(h * 6);
-    f = h * 6 - i;
-    p = v * (1 - s);
-    q = v * (1 - f * s);
-    t = v * (1 - (1 - f) * s);
-    switch (i % 6) {
-      case 0: r = v, g = t, b = p; break;
-      case 1: r = q, g = v, b = p; break;
-      case 2: r = p, g = v, b = t; break;
-      case 3: r = p, g = q, b = v; break;
-      case 4: r = t, g = p, b = v; break;
-      case 5: r = v, g = p, b = q; break;
-    }
-    return {
-      r: Math.round(r * 255),
-      g: Math.round(g * 255),
-      b: Math.round(b * 255)
-    };
-  }
-
-  /**
-   * This method is based on: https://stackoverflow.com/a/43521261/4807354
-   * and calculates the luminance of the given rgb color. Based on this the
-   * font color is changed to black or white.
-   * @param rgb color to calculate the luminance from
-   */
-  private getFontColorFromRGB(rgb: { r: number, g: number, b: number }) {
-    const black = 'rgb(0, 0, 0)';
-    const white = 'rgb(255, 255, 255)';
-
-    const luminance = Math.sqrt(0.241
-      * Math.pow(rgb.r, 2) + 0.691 * Math.pow(rgb.g, 2) + 0.068
-      * Math.pow(rgb.b, 2));
-    if (luminance >= 130) {
-      return black;
-    } else {
-      return white;
+    const len = this.styleSheet.rules.length;
+    for (let i = 0; i < len ; i++) {
+      this.styleSheet.deleteRule(0);
     }
   }
 

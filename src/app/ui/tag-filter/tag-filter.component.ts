@@ -132,6 +132,10 @@ export class TagFilterComponent implements OnInit {
     console.log('Removed: ', $event);
   }
 
+  onChange($event) {
+    console.log('Selected: ', this.termsSelected);
+  }
+
   /**
    * Method is called once all tags are removed from the selected list.
    * If this is called then no entries are selected.

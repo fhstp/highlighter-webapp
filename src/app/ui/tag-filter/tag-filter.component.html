@@ -11,6 +11,7 @@
     [(ngModel)]="termsSelected"
     (add)="onAdd($event)"
     (remove)="onRemove($event)"
+    (change)="onChange($event)"
     (clear)="onClear()">
     <ng-template ng-optgroup-tmp let-item="item" let-item$="item$" let-index="index">
       <div *ngIf="item.group !== 'Andere'">
