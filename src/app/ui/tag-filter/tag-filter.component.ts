@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { DataStorageService } from 'src/app/shared/data-storage.service';
 import { zip } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { ColorGeneratorService } from 'src/app/shared/color-generator.service';
 
 @Component({
   selector: 'app-tag-filter',
@@ -20,7 +21,8 @@ export class TagFilterComponent implements OnInit {
   // Terms that are selected
   termsSelected: any;
 
-  constructor(private dataStorage: DataStorageService) { }
+  constructor(private dataStorage: DataStorageService,
+    private colorGenerator: ColorGeneratorService) { }
 
   ngOnInit() {
     // Combine both observable streams together and wait till both "finished" with zip
@@ -133,7 +135,7 @@ export class TagFilterComponent implements OnInit {
   }
 
   onChange($event) {
-    console.log('Selected: ', this.termsSelected);
+    this.colorGenerator.alterStyleRules(this.termsSelected);
   }
 
   /**

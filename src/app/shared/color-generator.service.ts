@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { DataStorageService } from './data-storage.service';
 import Helper from '../util/helper';
 import criteriasConfig from '../../assets/criterias.json';
+import { Style } from './style.model';
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +17,13 @@ export class ColorGeneratorService {
   private criteriasArray: Array<string>;
   private nColors: number;
 
+  private originalRules = [];
+  private orignalRulesTextO = [];
+
+  /**
+   * This method is the initial method which creates the master set of style rules.
+   * @param searchTerms to generate style rules for
+   */
   generateStyleRules(searchTerms?: Array<string>) {
     // Used to store the search terms later and sub categories
     const terms = {};
@@ -39,26 +47,36 @@ export class ColorGeneratorService {
       const rgb = Helper.HSVtoRGB(startColor + (1 / this.nColors * i), 0.7, 1);
       const fontColor = Helper.getFontColorFromRGB(rgb);
 
-      this.addRule(`.${crit.toLowerCase()}`,
-        `background-color: rgb(${rgb.r}, ${rgb.g}, ${rgb.b});
-        color: ${fontColor};`, `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`, `${fontColor}`);
-
-      // add CSS for overview rects
-      this.addRule(`.textOverview rect.${crit.toLowerCase()}`,
-        `fill: rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`);
+      this.originalRules.push({
+        'selector': `.${crit.toLowerCase()}`,
+        'rule':  `background-color: rgb(${rgb.r}, ${rgb.g}, ${rgb.b}); color: ${fontColor};`,
+        'color': `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`,
+        'fontC': `${fontColor}`
+      });
+      this.orignalRulesTextO.push({
+        'selector': `.textOverview rect.${crit.toLowerCase()}`,
+        'rule':  `fill: rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`
+      });
 
       // Add the sub rules if present
       const currentCritSubCat = criteriasConfig[crit];
       if (currentCritSubCat !== undefined) {
         currentCritSubCat.forEach((el) => {
-          this.addRule(`.${el.toLowerCase()}`,
-            `background-color:  rgb(${rgb.r}, ${rgb.g}, ${rgb.b});
-            color: ${fontColor}`);
-          this.addRule(`.textOverview rect.${el.toLowerCase()}`,
-            `fill: rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`);
+          this.originalRules.push({
+            'selector': `.${el.toLowerCase()}`,
+            'rule':  `background-color: rgb(${rgb.r}, ${rgb.g}, ${rgb.b}); color: ${fontColor};`,
+            'color': `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`,
+            'fontC': `${fontColor}`
+          });
+          this.orignalRulesTextO.push({
+            'selector': `.textOverview rect.${el.toLowerCase()}`,
+            'rule':  `fill: rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`
+          });
         });
       }
 
+      // First create all rules that we passed
+      this.addRulesToStylesheet(this.originalRules, this.orignalRulesTextO);
       // Save the terms and subcategories for later use
       terms[crit] = criteriasConfig[crit];
     });
@@ -73,6 +91,20 @@ export class ColorGeneratorService {
     }
   }
 
+  alterStyleRules(currentTerms: Array<string>) {
+    // 1) We need to convert the terms to selectors
+    const cT = currentTerms.map(el => '.' + el.toLowerCase());
+    const cTfO = currentTerms.map(elm => '.textOverview rect.' + elm.toLowerCase());
+    // 2) Take only those from the original ones we want to display
+    const rulesText = this.originalRules.filter(item => cT.includes(item.selector));
+    const rulesOverview = this.orignalRulesTextO.filter(item => cTfO.includes(item.selector));
+    // 3) Remove all the rules first off
+    this.removeAllRules();
+    this.removeVariables();
+    // 4) Add those we need finally
+    this.addRulesToStylesheet(rulesText, rulesOverview);
+  }
+
   /**
    * This method creates an empty stlyesheet where we then can add our rules.
    */
@@ -81,6 +113,22 @@ export class ColorGeneratorService {
     style.appendChild(document.createTextNode(''));
     document.head.appendChild(style);
     this.styleSheet = style.sheet;
+  }
+
+  /**
+   * This method is used in order to add all style rules for the text and overview to
+   * the stylesheet.
+   * @param rules is the array of objects for normal text
+   * @param rulesOverview is the array of objects for the text overview.
+   */
+  private addRulesToStylesheet(rules: Array<Style>, rulesOverview: Array<Style>) {
+    rules.forEach(el => {
+      this.addRule(el.selector, el.rule, el.color, el.fontC);
+    });
+
+    rulesOverview.forEach(elm => {
+      this.addRule(elm.selector, elm.rule);
+    });
   }
 
   /**
@@ -112,6 +160,14 @@ export class ColorGeneratorService {
     for (let i = 0; i < len ; i++) {
       this.styleSheet.deleteRule(0);
     }
+  }
+
+  /**
+   * This method is used in order to clean all the current variables.
+   */
+  private removeVariables() {
+    this.currentRules = new Map();
+    this.currentColors = new Map();
   }
 
   /**
