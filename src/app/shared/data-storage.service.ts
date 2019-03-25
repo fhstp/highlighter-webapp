@@ -6,9 +6,9 @@ import { Aurum } from './aurum.model';
 export class DataStorageService {
 
   private defaultData = {
-    searchTerms: ['Sample'],
+    searchTerms: ['Beispiel'],
     found_occurences: [{}],
-    markupString: ['Example', 'Text', '\n', 'With', 'some', 'sample', 'Text.', '\n'],
+    markupString: ['Etwas', 'Text', '\n', '\n', '...', 'und', 'noch', '\n', 'mehr', 'Text.', '\n'],
     link: 'www.example.com'
   };
 
