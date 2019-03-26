@@ -5,6 +5,7 @@ import { DataStorageService } from '../../shared/data-storage.service';
 import { LineModel, Markup } from '../../shared/line.model';
 import { LineWrapper } from 'src/app/util/line-wrapper';
 import { isNullOrUndefined } from 'util';
+import { ContainerElement } from 'd3';
 
 interface TextModel {
   lines: Array<LineModel>;
@@ -235,10 +236,6 @@ export class VizComponent implements OnInit, OnDestroy {
         d3.select(overviewSelector + ' g.brush').transition().call(d3.event.target.move, y1);
       });
 
-    // g.append('g')
-    //   .attr('class', 'brush')
-    //   .call(brush);
-
     const gBrush = g.append('g')
       .attr('class', 'brush')
       .call(brush)
@@ -246,13 +243,34 @@ export class VizComponent implements OnInit, OnDestroy {
 
     // removes handle to resize the brush
     d3.selectAll('.brush>.handle').remove();
+    // removes overlay that listens on drag selection
+    d3.selectAll('.brush>.overlay').remove();
+
+    // instead listen to mouse clicks (result from usab test Nov 2018)
+    svg.on('click', () => {
+      const coords = d3.mouse(svg.node() as ContainerElement);
+      const line = y.invert(coords[1]);
+      text.detailStart = line - linesToShow / 2;
+
+      // correct extent at edges
+      if (text.detailStart < text.extent[0]) {
+        text.detailStart = text.extent[0];
+      }
+      if (text.detailStart + linesToShow - 1 > text.extent[1]) {
+        text.detailStart = text.extent[1] - linesToShow + 1;
+      }
+
+      // update brush & detail view
+      gBrush.call(brush.move, [text.detailStart, text.detailStart + linesToShow - 1].map(brushScale));
+      this.renderDetail(text, detailElem);
+    });
 
     // enable scrolling
     detailElem.nativeElement.addEventListener('wheel', event => {
       const delta = Math.sign(event.wheelDelta);
       text.detailStart -= delta;
 
-      // correct extent and at edges
+      // correct extent at edges
       if (text.detailStart < text.extent[0]) {
         text.detailStart = text.extent[0];
       }
