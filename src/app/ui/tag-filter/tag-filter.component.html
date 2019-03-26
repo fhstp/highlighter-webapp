@@ -29,7 +29,7 @@
     <ng-template ng-label-tmp let-item="item" let-clear="clear">
       <span class="ng-value-label" [ngStyle]="{
                     'color': item.fontC,
-                    'background-color': item.color}">{{item.name}}</span>
+                    'background-color': item.color}">{{item.name}} ({{item.occ}})</span>
       <span class="ng-value-icon right" (click)="trigger(clear, item)" aria-hidden="true">×</span>
     </ng-template>
 
@@ -37,7 +37,7 @@
       <input id="item-{{index}}" type="checkbox" [ngModel]="item$.selected" />
       <span class="specialTags" [ngStyle]="{
             'color': item.fontC,
-            'background-color': item.color}">{{item.name}}</span>
+            'background-color': item.color}">{{item.name}} ({{item.occ}})</span>
     </ng-template>
     </ng-select>
 </div>

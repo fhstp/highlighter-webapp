@@ -3,6 +3,7 @@ import { DataStorageService } from 'src/app/shared/data-storage.service';
 import { zip } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ColorGeneratorService } from 'src/app/shared/color-generator.service';
+import Helper from 'src/app/util/helper';
 
 @Component({
   selector: 'app-tag-filter',
@@ -59,14 +60,14 @@ export class TagFilterComponent implements OnInit {
     let mainCategories: Array<string>;
     mainCategories = Object.keys(searchTerms);
 
-    // 2) Create and array of objects where each has the key as the main category and the colors
+    // 2) Create an array of objects where each has the key as the main category and the colors
     this.styleRules.forEach(function (value, key) {
       const color = {};
       color[key] = [...value.split('|')];
       arrayOfColors.push(color);
     }, this.styleRules);
 
-    // 3) Iterate over each main categorie and its sub categories and build the rewuired structure
+    // 3) Iterate over each main category and its sub categories and build the required structure
     const result = [];
     const selected = [];
 
@@ -85,8 +86,8 @@ export class TagFilterComponent implements OnInit {
       mainCrit['fontC'] = critColors[critClass][1];
       // The group property for the main categories is the same as crit
       mainCrit['group'] = searchTerms[crit] !== undefined ? crit : 'Andere';
-      // The occ not read yet so all is 1
-      mainCrit['occ'] = 1;
+      // The occ ... number of found occurences
+      mainCrit['occ'] = Helper.extractOccurence(crit, this.foundOcc);
       // The boolean is true as we are in main categorie now
       mainCrit['isMain'] = true;
 
@@ -102,11 +103,13 @@ export class TagFilterComponent implements OnInit {
           subCrit['color'] = critColors[critClass][0];
           subCrit['fontC'] = critColors[critClass][1];
           subCrit['group'] = crit;
-          subCrit['occ'] = 1;
+          subCrit['occ'] = Helper.extractOccurence(sCrit, this.foundOcc);
           subCrit['isMain'] = false;
 
           result.push(subCrit);
-          selected.push(sCrit);
+          if (subCrit['occ'] > 0) {
+            selected.push(sCrit);
+          }
         });
       }
     });

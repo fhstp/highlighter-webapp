@@ -52,9 +52,9 @@ export default class Helper {
   }
 
   static extractOccurence(searchTerm: string, occurences: any): number {
-    const occ = occurences;
-    console.log(this.flattenArray(occ));
-    return 1;
+    return [].concat.apply([], occurences)
+      .filter((o) => o.index !== undefined && o.searchTerm === searchTerm)
+      .length;
   }
 
   /**
