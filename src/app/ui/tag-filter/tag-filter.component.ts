@@ -150,7 +150,7 @@ export class TagFilterComponent implements OnInit {
   }
 
   /**
-   * This is a workaround for the knwon template defined method bug.
+   * This is a workaround for the known template defined method bug.
    * https://github.com/angular/angular/issues/16643
    * @param callback Method to call or trigger
    * @param args Arguments of the method to call
