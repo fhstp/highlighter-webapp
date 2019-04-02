@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { HttpClientModule } from '@angular/common/http';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -19,6 +19,8 @@ import { ConfirmDialogComponent } from './util/modals/confirm-dialog/confirm-dia
 import { InputDialogComponent } from './util/modals/input-dialog/input-dialog.component';
 import { MessageDialogComponent } from './util/modals/message-dialog/message-dialog.component';
 import { TagFilterComponent } from './ui/tag-filter/tag-filter.component';
+
+import { NgSelectModule } from '@ng-select/ng-select';
 
 @NgModule({
   declarations: [
@@ -39,7 +41,9 @@ import { TagFilterComponent } from './ui/tag-filter/tag-filter.component';
     ReactiveFormsModule,
     NgbModule.forRoot(),
     AppRoutingModule,
-    HttpClientModule
+    HttpClientModule,
+    NgSelectModule,
+    FormsModule
   ],
   providers: [
     DataLoadingService,

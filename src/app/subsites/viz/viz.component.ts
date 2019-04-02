@@ -141,7 +141,6 @@ export class VizComponent implements OnInit, OnDestroy {
   }
 
   private renderDetail(text: TextModel, elem: ElementRef) {
-    console.log('text: ', text);
     console.log('%c FROM component | Inside renderDetail() function', 'background: #222; color: orange;');
 
     const stringToPrint = text.lines
