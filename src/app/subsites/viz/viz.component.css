@@ -1,0 +1,63 @@
+.contentParent {
+    display: flex;
+}
+
+.contentParent>div>div {
+    display: flex;
+}
+
+.website {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.containerAlt {
+    padding-left: 4%;
+    padding-right: 4%;
+    padding-top: 0.5%;
+    padding-bottom: 0.5%;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.textContainer {
+    width: 37%;
+    height: 600px;
+    word-break: keep-all;
+    white-space: pre-wrap;
+    /* margin-bottom: 8%; */
+    padding: .375rem .75rem;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+    overflow: hidden;
+}
+
+.textOverview {
+    width: 8%;
+    height: 600px;
+    background: white;
+    cursor: crosshair;
+}
+
+.textOverview rect.x-none {
+    fill: #777;
+}
+
+.filterSection {
+    /* min-height: 140px; */
+    height: 100%;
+    margin: -45px 0 10px 0;
+    padding: 5px 5px 5px 5px;
+}
+
+.filterSection small {
+    font-size: 60%;
+}
+
+span {
+    border-radius: 3px;
+}

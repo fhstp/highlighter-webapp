@@ -1,17 +1,22 @@
-<div id="injector1" class="shadowBox">Inject here the json</div>
-<div id="injector2" class="shadowBox">Inject here the json</div>
+<!-- HEADER COMPONENT -->
+<app-header></app-header>
 
-<app-layout>
-  <h1>Highlighter</h1>
-  <hr/> Finished: 8%
-  <p>
-    <ngb-progressbar type="info" [value]="8"></ngb-progressbar>
-  </p>
+<!-- REST OF LAYOUT -->
+<router-outlet></router-outlet>
 
-  <div class="jumbotron">
-    <h1>Angular CLI v6 + Bootstrap & FontAwesome</h1>
-    <p>
-      In this tutorial you learn how to use Angular CLI v6 with Bootstrap and FontAwesome!
-    </p>
+<!-- FOOTER COMPONENT -->
+<app-footer></app-footer>
+
+<!-- IMPORTANT!!!! LEAVE THIS-->
+<input type="text" id="data1" class="totallyHidden" (input)="onInputData($event)">
+<input type="text" id="data2" class="totallyHidden" (input)="onInputData($event)">
+
+<!-- Fancy loader-->
+<div *ngIf="loading" class="loader">
+  <div class="face face1">
+    <div class="circle"></div>
   </div>
-</app-layout>
+  <div class="face face2">
+    <div class="circle"></div>
+  </div>
+</div>

@@ -1,0 +1,31 @@
+<div class="containerAlt">
+  <div class="row">
+    <div class="col-md-12 filterSection">
+      <h5>Gesuchte Kriterien:
+      <small>In Klammer, die Anzahl der gefundenen Kriterien im Text / den Texten</small></h5>
+      <app-tag-filter></app-tag-filter>
+    </div>
+  </div>
+
+  <div class="row">
+    <div id="data1Pane" class="col-md-12 contentParent">
+      <div>
+        <div class="website">{{ firstWebsiteName }}</div>
+        <div>
+          <svg #dataOverview id="dataOverview" class="textOverview"></svg>
+          <div #dataContainer id="dataDetail1" class="textContainer"></div>
+        </div>
+      </div>
+
+      <div style="width: 5%">&nbsp;</div>
+
+      <div id="comparisonContainer" style="display: none">
+        <div class="website">{{ secondWebsiteName }}</div>
+        <div>
+          <div #dataContainer2 id="dataDetail2" class="textContainer"></div>
+          <svg #dataOverview2 id="dataOverview2" class="textOverview"></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
