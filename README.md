@@ -1,3 +1,6 @@
+> **Warning**
+> This project is no longer actively maintained. You can still (re)use it under its MIT license but be aware that the underlying npm packages are outdated and might pose security risks.
+
 # ![HighLighter](https://github.com/fhstp/highlighter-webextension/raw/master/app/images/Logo_contractVis.png) Web App
 
 Buying a product or signing up for a service implicates a contract between the consumer and the merchant or provider.
